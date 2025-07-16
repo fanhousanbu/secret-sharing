@@ -9,7 +9,7 @@ type Tab = 'encrypt' | 'decrypt';
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('encrypt');
-  const { t, language } = useI18n();
+  const { t } = useI18n();
 
   useEffect(() => {
     document.title = t.appTitle;
