@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Upload, Download, FileText, AlertCircle, CheckCircle, Info } from 'lucide-react';
 import { WebFileProcessor } from '../crypto/fileProcessor';
 import { EncryptionScheme, FileRecoveryResult } from '../crypto/types';
+import { useI18n } from '../i18n/index';
 
 interface RecoveryState {
   encryptedFile: File | null;
@@ -16,6 +17,7 @@ interface RecoveryState {
 }
 
 export const FileRecovery: React.FC = () => {
+  const { t, formatMessage } = useI18n();
   const [state, setState] = useState<RecoveryState>({
     encryptedFile: null,
     shareFiles: [],
@@ -78,17 +80,17 @@ export const FileRecovery: React.FC = () => {
   const handleRecover = async () => {
     // 对于混合方案，需要加密文件
     if (state.detectedScheme === 'hybrid' && !state.encryptedFile) {
-      setState(prev => ({ ...prev, error: '混合方案需要加密文件' }));
+      setState(prev => ({ ...prev, error: t.errorHybridNeedsEncrypted }));
       return;
     }
 
     if (state.shareFiles.length < 2) {
-      setState(prev => ({ ...prev, error: '至少需要2个份额文件' }));
+      setState(prev => ({ ...prev, error: t.errorAtLeastTwoShares }));
       return;
     }
 
     if (state.needsPassword && !state.password) {
-      setState(prev => ({ ...prev, error: '此文件需要密码，请输入密码' }));
+      setState(prev => ({ ...prev, error: t.errorPasswordNeeded }));
       return;
     }
 
@@ -134,7 +136,7 @@ export const FileRecovery: React.FC = () => {
     } catch (err) {
       setState(prev => ({
         ...prev,
-        error: err instanceof Error ? err.message : '恢复过程中发生错误',
+        error: err instanceof Error ? err.message : t.errorRecoveryFailed,
         isProcessing: false
       }));
     }
@@ -169,15 +171,15 @@ export const FileRecovery: React.FC = () => {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="bg-white rounded-lg p-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">文件恢复</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">{t.fileRecovery}</h2>
         
         {/* Encrypted File Upload - Only for hybrid scheme */}
         {state.detectedScheme !== 'pure-shamir' && (
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              选择加密文件
+              {t.selectEncryptedFile}
               {state.detectedScheme === 'hybrid' && (
-                <span className="text-sm text-gray-500 ml-2">（混合方案需要）</span>
+                <span className="text-sm text-gray-500 ml-2">{t.hybridSchemeRequired}</span>
               )}
             </label>
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-indigo-500 transition-colors">
@@ -190,13 +192,13 @@ export const FileRecovery: React.FC = () => {
               />
               <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
               <p className="text-gray-600 mb-2">
-                {state.encryptedFile ? state.encryptedFile.name : '选择加密文件 (.encrypted)'}
+                {state.encryptedFile ? state.encryptedFile.name : t.selectEncryptedFile + ' (.encrypted)'}
               </p>
               <button
                 onClick={() => encryptedFileRef.current?.click()}
                 className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
               >
-                选择文件
+                {t.selectFile}
               </button>
             </div>
             {state.encryptedFile && (
@@ -208,7 +210,7 @@ export const FileRecovery: React.FC = () => {
                   onClick={removeEncryptedFile}
                   className="text-red-600 hover:text-red-800 text-sm"
                 >
-                  移除
+                  {t.remove}
                 </button>
               </div>
             )}
@@ -223,12 +225,12 @@ export const FileRecovery: React.FC = () => {
                 <Info className="w-4 h-4 text-blue-500 mr-2 mt-0.5" />
                 <div>
                   <p className="font-medium text-blue-700 mb-1">
-                    检测到的方案：{state.detectedScheme === 'hybrid' ? '混合方案' : '纯Shamir方案'}
+                    {t.detectedScheme}{state.detectedScheme === 'hybrid' ? t.detectedSchemeHybrid : t.detectedSchemePureShamir}
                   </p>
                   {state.detectedScheme === 'hybrid' ? (
-                    <p>需要加密文件和足够的份额文件来恢复原始文件</p>
+                    <p>{t.hybridSchemeRecoveryDesc}</p>
                   ) : (
-                    <p>只需要足够的份额文件{state.needsPassword ? '和正确的密码' : ''}即可恢复原始文件，无需加密文件</p>
+                    <p>{formatMessage('pureShamirRecoveryDesc', { needsPassword: state.needsPassword ? '和正确的密码' : '' })}</p>
                   )}
                 </div>
               </div>
@@ -239,10 +241,10 @@ export const FileRecovery: React.FC = () => {
         {/* Share Files Upload */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            选择份额文件
+            {t.selectShareFiles}
             {state.detectedScheme && (
               <span className="text-sm text-gray-500 ml-2">
-                （{state.detectedScheme === 'hybrid' ? '混合方案' : '纯Shamir方案'}）
+                （{state.detectedScheme === 'hybrid' ? t.detectedSchemeHybrid : t.detectedSchemePureShamir}）
               </span>
             )}
           </label>
@@ -257,18 +259,18 @@ export const FileRecovery: React.FC = () => {
             />
             <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
             <p className="text-gray-600 mb-2">
-              选择份额文件 (.json) - 可以选择多个
+              {t.multipleSelection}
             </p>
             {state.detectedScheme === 'pure-shamir' && (
               <p className="text-sm text-orange-600 mb-2">
-                纯Shamir方案需要上传足够数量的份额文件（通常是阈值数量）
+                {t.pureShamirUploadNote}
               </p>
             )}
             <button
               onClick={() => shareFilesRef.current?.click()}
               className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
             >
-              选择份额文件
+              {t.selectShareFiles}
             </button>
           </div>
           
@@ -276,9 +278,9 @@ export const FileRecovery: React.FC = () => {
           {state.shareFiles.length > 0 && (
             <div className="mt-4 space-y-2">
               <div className="flex items-center justify-between">
-                <h4 className="font-medium text-gray-700">已选择的份额文件：</h4>
+                <h4 className="font-medium text-gray-700">{t.selectedShareFiles}</h4>
                 <span className="text-sm text-gray-500">
-                  {state.shareFiles.length} 个文件
+                  {formatMessage('filesCount', { count: state.shareFiles.length })}
                 </span>
               </div>
               {state.shareFiles.map((file, index) => (
@@ -288,14 +290,14 @@ export const FileRecovery: React.FC = () => {
                     onClick={() => removeShareFile(index)}
                     className="text-red-600 hover:text-red-800 text-sm"
                   >
-                    移除
+                    {t.remove}
                   </button>
                 </div>
               ))}
               {state.detectedScheme === 'pure-shamir' && (
                 <div className="text-sm text-gray-600 p-2 bg-yellow-50 rounded">
-                  <p>💡 提示：纯Shamir方案通常需要上传与阈值数量相同的份额文件</p>
-                  <p>如果恢复失败，请尝试上传更多不同的份额文件</p>
+                  <p>{t.pureShamirTip}</p>
+                  <p>{t.pureShamirTipDesc}</p>
                 </div>
               )}
             </div>
@@ -306,20 +308,20 @@ export const FileRecovery: React.FC = () => {
         {state.needsPassword && (
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              文件密码
+              {t.filePassword}
             </label>
             <input
               type="password"
               value={state.password}
               onChange={(e) => setState(prev => ({ ...prev, password: e.target.value }))}
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="请输入文件加密时使用的密码"
+              placeholder={t.passwordRequired}
             />
             <div className="mt-2 text-sm text-gray-600">
-              <p>• 检测到此文件使用了密码保护</p>
-              <p>• 请输入加密时设置的密码</p>
+              <p>{t.passwordDetected}</p>
+              <p>{t.passwordDetectedDesc}</p>
               {state.detectedScheme === 'pure-shamir' && (
-                <p>• 纯Shamir方案：密码与份额共同保护文件安全</p>
+                <p>{t.pureShamirPasswordNote}</p>
               )}
             </div>
           </div>
@@ -351,7 +353,7 @@ export const FileRecovery: React.FC = () => {
               : 'bg-green-600 text-white hover:bg-green-700'
           }`}
         >
-          {state.isProcessing ? '正在恢复...' : '开始恢复'}
+          {state.isProcessing ? t.recovering : t.startRecovery}
         </button>
 
         {/* Result */}
@@ -359,27 +361,27 @@ export const FileRecovery: React.FC = () => {
           <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-md">
             <div className="flex items-center mb-3">
               <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
-              <span className="text-green-800 font-medium">恢复完成！</span>
+              <span className="text-green-800 font-medium">{t.recoveryComplete}</span>
             </div>
             <div className="text-sm text-gray-700 mb-4">
-              <p>• 文件已成功恢复</p>
-              <p>• 原文件名: {state.originalFilename}</p>
-              <p>• 使用了 {state.shareFiles.length} 个份额文件</p>
+              <p>{t.recoveryCompleteDesc1}</p>
+              <p>{formatMessage('recoveryCompleteDesc2', { filename: state.originalFilename })}</p>
+              <p>{formatMessage('recoveryCompleteDesc3', { shareCount: state.shareFiles.length })}</p>
               {state.detectedScheme === 'hybrid' && state.encryptedFile && (
-                <p>• 使用了加密文件: {state.encryptedFile.name}</p>
+                <p>{formatMessage('recoveryCompleteDesc4', { encryptedFile: state.encryptedFile.name })}</p>
               )}
-              <p>• 恢复方案: {state.detectedScheme === 'hybrid' ? '混合方案' : '纯Shamir方案'}</p>
+              <p>{formatMessage('recoveryCompleteDesc5', { scheme: state.detectedScheme === 'hybrid' ? t.detectedSchemeHybrid : t.detectedSchemePureShamir })}</p>
               
               {/* 文件完整性验证 */}
               {state.result && (
                 <div className="mt-3 p-3 bg-blue-50 rounded-md">
-                  <p className="text-sm text-blue-800 mb-1">💡 验证文件完整性</p>
+                  <p className="text-sm text-blue-800 mb-1">{t.verifyFileIntegrity}</p>
                   <p className="text-xs text-blue-600">
-                    文件已成功恢复。如果你有原始文件的SHA256值，可以在上方手动验证文件完整性。
+                    {t.fileRecoveredNote}
                   </p>
                   
                   <div className="mb-3">
-                    <p className="text-xs text-gray-600 mb-1">恢复后文件SHA256：</p>
+                    <p className="text-xs text-gray-600 mb-1">{t.recoveredFileSHA256}</p>
                     <p className="text-xs text-gray-800 font-mono break-all bg-white p-1 rounded">
                       {state.result.recoveredSHA256}
                     </p>
@@ -387,13 +389,13 @@ export const FileRecovery: React.FC = () => {
                   
                   <div className="mb-3">
                     <label className="block text-xs text-gray-600 mb-1">
-                      验证SHA256（可选）：
+                      {t.verifySHA256Optional}
                     </label>
                     <input
                       type="text"
                       value={expectedSha256}
                       onChange={(e) => setExpectedSha256(e.target.value)}
-                      placeholder="输入期望的SHA256值进行验证..."
+                      placeholder={t.sha256Placeholder}
                       className="w-full text-xs font-mono border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     {expectedSha256 && (
@@ -402,8 +404,8 @@ export const FileRecovery: React.FC = () => {
                         color: expectedSha256.toLowerCase() === state.result.recoveredSHA256.toLowerCase() ? '#166534' : '#dc2626'
                       }}>
                         {expectedSha256.toLowerCase() === state.result.recoveredSHA256.toLowerCase() ? 
-                          '✅ SHA256验证通过：文件完整性确认' : 
-                          '❌ SHA256验证失败：文件可能已损坏或被篡改'
+                          t.sha256VerificationPass : 
+                          t.sha256VerificationFail
                         }
                       </div>
                     )}
@@ -418,14 +420,14 @@ export const FileRecovery: React.FC = () => {
                 className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
               >
                 <Download className="w-4 h-4 mr-2" />
-                下载恢复的文件
+                {t.downloadRecoveredFile}
               </button>
               <button
                 onClick={downloadHashRecord}
                 className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
               >
                 <Download className="w-4 h-4 mr-2" />
-                下载哈希记录
+                {t.downloadHashRecord}
               </button>
             </div>
           </div>

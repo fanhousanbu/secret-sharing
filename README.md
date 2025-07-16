@@ -1,82 +1,82 @@
-# 文件加密与秘密分享系统
+# File Encryption & Secret Sharing System
 
-这是一个基于Web的文件加密和Shamir秘密分享系统，支持两种加密方案：
+A web-based file encryption and Shamir secret sharing system that supports two encryption schemes:
 
-## 功能特点
+## Features
 
-### 🔐 两种加密方案
-- **混合方案（推荐）**：使用AES加密文件，只分割密钥，存储效率高
-- **纯Shamir方案**：直接分割文件数据，符合传统阈值加密理论
+### 🔐 Two Encryption Schemes
+- **Hybrid Scheme (Recommended)**: Uses AES to encrypt files and only splits the key, providing high storage efficiency
+- **Pure Shamir Scheme**: Directly splits file data, conforming to traditional threshold encryption theory
 
-### 🔒 安全特性
-- 支持阈值加密（m-of-n方案）
-- 可选密码保护（两种方案都支持）
-- 使用Web Crypto API进行加密
-- 实现Shamir秘密分享算法
+### 🔒 Security Features
+- Supports threshold encryption (m-of-n scheme)
+- Optional password protection (both schemes support)
+- Uses Web Crypto API for encryption
+- Implements Shamir secret sharing algorithm
 
-### 📊 文件完整性验证
-- **SHA256哈希计算**：为上传的原始文件自动计算SHA256哈希
-- **完整性验证**：恢复文件后自动验证与原始文件的完整性
-- **哈希记录下载**：提供包含原始和恢复文件哈希的记录文件
-- **可视化验证状态**：UI中清晰显示文件完整性验证结果
+### 📊 File Integrity Verification
+- **SHA256 Hash Calculation**: Automatically calculates SHA256 hash for uploaded original files
+- **Integrity Verification**: Automatically verifies file integrity after recovery
+- **Hash Record Download**: Provides record files containing original and recovered file hashes
+- **Visual Verification Status**: Clearly displays file integrity verification results in UI
 
-## 使用方法
+## Usage
 
-### 文件加密
-1. 选择要加密的文件
-2. 选择加密方案（混合方案或纯Shamir方案）
-3. 设置阈值参数（如3-of-5）
-4. 可选择设置密码保护
-5. 下载生成的文件（加密文件/份额文件）
+### File Encryption
+1. Select the file to encrypt
+2. Choose encryption scheme (hybrid or pure Shamir)
+3. Set threshold parameters (e.g., 3-of-5)
+4. Optionally set password protection
+5. Download generated files (encrypted file/share files)
 
-### 文件恢复
-1. 上传所需的文件：
-   - 混合方案：加密文件 + 足够的份额文件
-   - 纯Shamir方案：足够的份额文件
-2. 如果设置了密码，输入密码
-3. 系统自动验证文件完整性
-4. 下载恢复的文件和哈希记录
+### File Recovery
+1. Upload required files:
+   - Hybrid scheme: encrypted file + sufficient share files
+   - Pure Shamir scheme: sufficient share files
+2. Enter password if set
+3. System automatically verifies file integrity
+4. Download recovered file and hash record
 
-### 文件完整性验证
-系统自动提供以下功能：
-- 原始文件SHA256哈希（加密时计算）
-- 恢复文件SHA256哈希（恢复时计算）
-- 完整性验证结果（通过/失败）
-- 哈希记录文件（JSON格式，包含时间戳）
+### File Integrity Verification
+The system automatically provides:
+- Original file SHA256 hash (calculated during encryption)
+- Recovered file SHA256 hash (calculated during recovery)
+- Integrity verification result (pass/fail)
+- Hash record file (JSON format with timestamp)
 
-## 技术实现
+## Technical Implementation
 
-- **前端**：React + TypeScript + Vite
-- **样式**：Tailwind CSS
-- **加密**：Web Crypto API
-- **哈希算法**：SHA-256
-- **秘密分享**：Shamir秘密分享算法
-- **数学运算**：基于有限域的多项式插值
+- **Frontend**: React + TypeScript + Vite
+- **Styling**: Tailwind CSS
+- **Encryption**: Web Crypto API
+- **Hash Algorithm**: SHA-256
+- **Secret Sharing**: Shamir secret sharing algorithm
+- **Mathematical Operations**: Polynomial interpolation based on finite fields
 
-## 安全性
+## Security
 
-- 所有加密操作在客户端进行
-- 使用强加密算法（AES-256-GCM）
-- 密钥派生使用PBKDF2（10万次迭代）
-- 支持密码保护的双重安全
-- 文件完整性验证确保数据准确性
+- All encryption operations performed on client-side
+- Uses strong encryption algorithms (AES-256-GCM)
+- Key derivation uses PBKDF2 (100,000 iterations)
+- Supports password protection for dual security
+- File integrity verification ensures data accuracy
 
-## 开发
+## Development
 
 ```bash
-# 安装依赖
+# Install dependencies
 npm install
 
-# 开发模式
+# Development mode
 npm run dev
 
-# 构建
+# Build
 npm run build
 ```
 
-## 安全提醒
+## Security Reminders
 
-- 请妥善保管份额文件和密码
-- 建议将份额文件分散存储
-- 定期验证份额文件的完整性
-- 重要文件请做好备份 
+- Please keep share files and passwords secure
+- Recommend storing share files in distributed locations
+- Regularly verify integrity of share files
+- Important files should be backed up 

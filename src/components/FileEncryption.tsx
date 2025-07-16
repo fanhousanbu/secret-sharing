@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Upload, Download, Settings, AlertCircle, CheckCircle, Info } from 'lucide-react';
 import { WebFileProcessor } from '../crypto/fileProcessor';
 import { SecretSharingConfig, EncryptionScheme } from '../crypto/types';
+import { useI18n } from '../i18n/index';
 
 interface HybridResult {
   shares: any[];
@@ -19,6 +20,7 @@ interface PureShamirResult {
 type EncryptionResult = HybridResult | PureShamirResult;
 
 export const FileEncryption: React.FC = () => {
+  const { t, formatMessage } = useI18n();
   const [file, setFile] = useState<File | null>(null);
   const [threshold, setThreshold] = useState<number>(3);
   const [totalShares, setTotalShares] = useState<number>(5);
@@ -44,31 +46,31 @@ export const FileEncryption: React.FC = () => {
 
   const handleEncrypt = async () => {
     if (!file) {
-      setError('请选择要加密的文件');
+      setError(t.errorSelectFile);
       return;
     }
 
     if (threshold > totalShares) {
-      setError('阈值不能大于总份额数');
+      setError(t.errorThresholdTooHigh);
       return;
     }
 
     if (threshold < 2) {
-      setError('阈值必须至少为2');
+      setError(t.errorThresholdTooLow);
       return;
     }
 
     if (usePassword) {
       if (!password) {
-        setError('请输入密码');
+        setError(t.errorPasswordRequired);
         return;
       }
       if (password !== confirmPassword) {
-        setError('两次输入的密码不一致');
+        setError(t.errorPasswordMismatch);
         return;
       }
       if (password.length < 6) {
-        setError('密码长度至少6位');
+        setError(t.errorPasswordTooShort);
         return;
       }
     }
@@ -90,7 +92,7 @@ export const FileEncryption: React.FC = () => {
         setResult({ ...result, scheme: 'pure-shamir' } as PureShamirResult);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : '加密过程中发生错误');
+      setError(err instanceof Error ? err.message : t.errorEncryptionFailed);
     } finally {
       setIsProcessing(false);
     }
@@ -132,12 +134,12 @@ export const FileEncryption: React.FC = () => {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="bg-white rounded-lg p-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">文件加密与分割</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">{t.fileEncryptionAndSplitting}</h2>
         
         {/* File Upload */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            选择文件
+            {t.selectFile}
           </label>
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-indigo-500 transition-colors">
             <input
@@ -148,18 +150,18 @@ export const FileEncryption: React.FC = () => {
             />
             <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-600 mb-2">
-              {file ? file.name : '点击选择文件或拖拽文件到此处'}
+              {file ? file.name : t.selectOrDrag}
             </p>
             <button
               onClick={() => fileInputRef.current?.click()}
               className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
             >
-              选择文件
+              {t.selectFile}
             </button>
           </div>
           {file && (
             <div className="mt-2 text-sm text-gray-600">
-              文件大小: {(file.size / 1024).toFixed(2)} KB
+              {t.fileSize}: {(file.size / 1024).toFixed(2)} KB
             </div>
           )}
         </div>
@@ -168,7 +170,7 @@ export const FileEncryption: React.FC = () => {
         <div className="mb-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
             <Settings className="w-5 h-5 mr-2" />
-            加密方案
+            {t.encryptionScheme}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div 
@@ -188,12 +190,12 @@ export const FileEncryption: React.FC = () => {
                   onChange={() => setScheme('hybrid')}
                   className="mr-2"
                 />
-                <span className="font-medium text-gray-800">混合方案（推荐）</span>
+                <span className="font-medium text-gray-800">{t.hybridSchemeRecommended}</span>
               </div>
               <div className="text-sm text-gray-600">
-                <p>• 文件用AES加密，只分割密钥</p>
-                <p>• 存储效率高，处理速度快</p>
-                <p>• 需要加密文件 + 足够份额</p>
+                <p>{t.hybridSchemeDesc1}</p>
+                <p>{t.hybridSchemeDesc2}</p>
+                <p>{t.hybridSchemeDesc3}</p>
               </div>
             </div>
             
@@ -214,12 +216,12 @@ export const FileEncryption: React.FC = () => {
                   onChange={() => setScheme('pure-shamir')}
                   className="mr-2"
                 />
-                <span className="font-medium text-gray-800">纯Shamir方案</span>
+                <span className="font-medium text-gray-800">{t.pureShamirScheme}</span>
               </div>
               <div className="text-sm text-gray-600">
-                <p>• 直接分割文件数据</p>
-                <p>• 只需要足够份额即可恢复</p>
-                <p>• 符合传统阈值加密理论</p>
+                <p>{t.pureShamirSchemeDesc1}</p>
+                <p>{t.pureShamirSchemeDesc2}</p>
+                <p>{t.pureShamirSchemeDesc3}</p>
               </div>
             </div>
           </div>
@@ -229,12 +231,12 @@ export const FileEncryption: React.FC = () => {
         <div className="mb-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
             <Settings className="w-5 h-5 mr-2" />
-            分割配置
+            {t.splittingConfig}
           </h3>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                总份额数 (n)
+                {t.totalShares}
               </label>
               <input
                 type="number"
@@ -247,7 +249,7 @@ export const FileEncryption: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                阈值 (m)
+                {t.threshold}
               </label>
               <input
                 type="number"
@@ -260,7 +262,7 @@ export const FileEncryption: React.FC = () => {
             </div>
           </div>
           <div className="mt-2 text-sm text-gray-600">
-            文件将被分成 {totalShares} 份，需要任意 {threshold} 份即可恢复
+            {formatMessage('shareDescription', { totalShares, threshold })}
           </div>
         </div>
 
@@ -275,7 +277,7 @@ export const FileEncryption: React.FC = () => {
                 className="mr-2"
               />
               <label htmlFor="usePassword" className="text-sm font-medium text-gray-700">
-                使用密码保护（推荐）
+                {t.usePasswordProtectionRecommended}
               </label>
             </div>
           
@@ -283,41 +285,41 @@ export const FileEncryption: React.FC = () => {
             <div className="space-y-4 p-4 bg-gray-50 rounded-md">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  加密密码
+                  {t.encryptionPassword}
                 </label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="请输入至少6位密码"
+                  placeholder={t.passwordPlaceholder}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  确认密码
+                  {t.confirmPassword}
                 </label>
                 <input
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="请再次输入密码"
+                  placeholder={t.confirmPasswordPlaceholder}
                 />
               </div>
               <div className="text-sm text-gray-600">
-                <p>• 使用密码保护可以提供双重安全保障</p>
-                <p>• 即使有份额文件，没有密码也无法恢复文件</p>
-                <p>• 请务必记住密码，遗忘后无法恢复</p>
+                <p>{t.passwordSecurityNote1}</p>
+                <p>{t.passwordSecurityNote2}</p>
+                <p>{t.passwordSecurityNote3}</p>
               </div>
             </div>
           )}
           
           {!usePassword && (
             <div className="text-sm text-gray-600 p-4 bg-yellow-50 rounded-md">
-              <p>• 不使用密码时，仅依靠份额文件进行保护</p>
-              <p>• 获得足够份额的人可以恢复文件</p>
-              <p>• 建议启用密码保护以提高安全性</p>
+              <p>{t.noPasswordNote1}</p>
+              <p>{t.noPasswordNote2}</p>
+              <p>{t.noPasswordNote3}</p>
             </div>
           )}
         </div>
@@ -329,11 +331,11 @@ export const FileEncryption: React.FC = () => {
               <div className="flex items-start">
                 <Info className="w-4 h-4 text-blue-500 mr-2 mt-0.5" />
                 <div>
-                  <p className="font-medium text-blue-700 mb-1">纯Shamir方案特点：</p>
-                  <p>• 直接分割文件数据，无需额外的加密文件</p>
-                  <p>• 符合传统阈值秘密分享理论</p>
-                  <p>• 可选择是否使用密码额外保护</p>
-                  <p>• 获得足够份额{usePassword ? '和密码' : ''}的人可以恢复文件</p>
+                  <p className="font-medium text-blue-700 mb-1">{t.pureShamirInfo}</p>
+                  <p>{t.pureShamirInfoDesc1}</p>
+                  <p>{t.pureShamirInfoDesc2}</p>
+                  <p>{t.pureShamirInfoDesc3}</p>
+                  <p>{formatMessage('pureShamirInfoDesc4', { usePassword: usePassword ? '和密码' : '' })}</p>
                 </div>
               </div>
             </div>
@@ -358,7 +360,7 @@ export const FileEncryption: React.FC = () => {
               : 'bg-indigo-600 text-white hover:bg-indigo-700'
           }`}
         >
-          {isProcessing ? '正在加密...' : '开始加密'}
+          {isProcessing ? t.encrypting : t.startEncryption}
         </button>
 
         {/* Result */}
@@ -367,35 +369,35 @@ export const FileEncryption: React.FC = () => {
             <div className="flex items-center mb-3">
               <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
               <span className="text-green-800 font-medium">
-                {result.scheme === 'hybrid' ? '加密完成！' : '文件分割完成！'}
+                {result.scheme === 'hybrid' ? t.encryptionComplete : t.fileSplittingComplete}
               </span>
             </div>
             <div className="text-sm text-gray-700 mb-4">
               {result.scheme === 'hybrid' ? (
                 <>
-                  <p>• 文件已成功加密并分割为 {totalShares} 份</p>
-                  <p>• 需要加密文件 + 任意 {threshold} 份即可恢复原文件</p>
-                  <p>• 请下载所有文件并妥善保管</p>
+                  <p>{formatMessage('encryptionCompleteDesc1', { totalShares })}</p>
+                  <p>{formatMessage('encryptionCompleteDesc2', { threshold })}</p>
+                  <p>{t.encryptionCompleteDesc3}</p>
                 </>
               ) : (
                 <>
-                  <p>• 文件已直接分割为 {totalShares} 份</p>
-                  <p>• 仅需要任意 {threshold} 份即可恢复原文件</p>
-                  <p>• 无需额外的加密文件</p>
+                  <p>{formatMessage('fileSplittingCompleteDesc1', { totalShares })}</p>
+                  <p>{formatMessage('fileSplittingCompleteDesc2', { threshold })}</p>
+                  <p>{t.fileSplittingCompleteDesc3}</p>
                 </>
               )}
               {result.metadata.originalSHA256 && (
                 <details className="mt-3">
                   <summary className="text-sm text-gray-600 cursor-pointer hover:text-gray-800">
-                    📋 查看文件指纹信息
+                    {t.viewFileFingerprint}
                   </summary>
                   <div className="mt-2 p-3 bg-gray-50 rounded-md">
-                    <p className="font-medium text-gray-800 mb-1">文件SHA256指纹：</p>
+                    <p className="font-medium text-gray-800 mb-1">{t.fileSHA256Fingerprint}</p>
                     <p className="text-xs text-gray-600 font-mono break-all bg-white p-2 rounded">
                       {result.metadata.originalSHA256}
                     </p>
                     <p className="text-xs text-gray-500 mt-2">
-                      💡 请记录此SHA256值，在恢复文件时可以手动验证文件完整性。
+                      {t.recordSHA256Note}
                     </p>
                   </div>
                 </details>
@@ -408,7 +410,7 @@ export const FileEncryption: React.FC = () => {
                   className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                 >
                   <Download className="w-4 h-4 mr-2" />
-                  下载加密文件
+                  {t.downloadEncryptedFile}
                 </button>
               )}
               <button
@@ -416,14 +418,14 @@ export const FileEncryption: React.FC = () => {
                 className="flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
               >
                 <Download className="w-4 h-4 mr-2" />
-                下载份额文件
+                {t.downloadShareFiles}
               </button>
               <button
                 onClick={downloadAllFiles}
                 className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
               >
                 <Download className="w-4 h-4 mr-2" />
-                下载全部
+                {t.downloadAll}
               </button>
             </div>
           </div>

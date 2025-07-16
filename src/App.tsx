@@ -1,12 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FileEncryption } from './components/FileEncryption';
 import { FileRecovery } from './components/FileRecovery';
+import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { Shield, FileText, Settings, Github } from 'lucide-react';
+import { useI18n } from './i18n/index';
 
 type Tab = 'encrypt' | 'decrypt';
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('encrypt');
+  const { t, language } = useI18n();
+
+  useEffect(() => {
+    document.title = t.appTitle;
+  }, [t]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -16,35 +23,38 @@ function App() {
           <div className="flex justify-center items-center mb-4">
             <Shield className="w-12 h-12 text-indigo-600 mr-3" />
             <h1 className="text-4xl font-bold text-gray-800">
-              文件加密与秘密分享系统
+              {t.appTitle}
             </h1>
           </div>
           <p className="text-gray-600 text-lg">
-            基于 Shamir 秘密分享算法的安全文件分割与恢复工具
+            {t.appSubtitle}
           </p>
+          <div className="flex justify-center mt-4">
+            <LanguageSwitcher />
+          </div>
         </div>
 
         {/* Features */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg p-6 shadow-md">
             <Shield className="w-8 h-8 text-green-600 mb-3" />
-            <h3 className="font-semibold text-gray-800 mb-2">安全加密</h3>
+            <h3 className="font-semibold text-gray-800 mb-2">{t.featureSecureEncryption}</h3>
             <p className="text-gray-600 text-sm">
-              使用 AES-256-GCM 算法对文件进行强加密保护
+              {t.featureSecureEncryptionDesc}
             </p>
           </div>
           <div className="bg-white rounded-lg p-6 shadow-md">
             <FileText className="w-8 h-8 text-blue-600 mb-3" />
-            <h3 className="font-semibold text-gray-800 mb-2">智能分割</h3>
+            <h3 className="font-semibold text-gray-800 mb-2">{t.featureSmartSplitting}</h3>
             <p className="text-gray-600 text-sm">
-              将加密密钥分割成多个份额，分散存储提高安全性
+              {t.featureSmartSplittingDesc}
             </p>
           </div>
           <div className="bg-white rounded-lg p-6 shadow-md">
             <Settings className="w-8 h-8 text-purple-600 mb-3" />
-            <h3 className="font-semibold text-gray-800 mb-2">灵活恢复</h3>
+            <h3 className="font-semibold text-gray-800 mb-2">{t.featureFlexibleRecovery}</h3>
             <p className="text-gray-600 text-sm">
-              只需要部分份额即可恢复原文件，具有良好的容错性
+              {t.featureFlexibleRecoveryDesc}
             </p>
           </div>
         </div>
@@ -61,7 +71,7 @@ function App() {
               }`}
             >
               <Shield className="w-5 h-5 inline mr-2" />
-              文件加密
+              {t.tabEncryption}
             </button>
             <button
               onClick={() => setActiveTab('decrypt')}
@@ -72,7 +82,7 @@ function App() {
               }`}
             >
               <FileText className="w-5 h-5 inline mr-2" />
-              文件恢复
+              {t.tabRecovery}
             </button>
           </div>
 
@@ -86,10 +96,10 @@ function App() {
         <div className="text-center mt-8 text-gray-500">
           <div className="flex justify-center items-center mb-2">
             <Github className="w-5 h-5 mr-2" />
-            <span>开源项目 • 基于 TypeScript 和 React</span>
+            <span>{t.footerOpenSource}</span>
           </div>
           <p className="text-sm">
-            使用 Shamir 秘密分享算法实现安全的文件分割与恢复
+            {t.footerDescription}
           </p>
         </div>
       </div>
@@ -97,4 +107,5 @@ function App() {
   );
 }
 
-export default App; 
+export default App;
+ 
