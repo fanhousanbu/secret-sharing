@@ -403,11 +403,11 @@ export const FileEncryption: React.FC = () => {
                 </details>
               )}
             </div>
-            <div className="flex space-x-3">
+            <div className="flex flex-wrap justify-center gap-2">
               {result.scheme === 'hybrid' && (
                 <button
                   onClick={downloadEncryptedFile}
-                  className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  className="flex items-center px-2 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors whitespace-nowrap"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   {t.downloadEncryptedFile}
@@ -415,14 +415,14 @@ export const FileEncryption: React.FC = () => {
               )}
               <button
                 onClick={downloadShareFiles}
-                className="flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                className="flex items-center px-2 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors whitespace-nowrap"
               >
                 <Download className="w-4 h-4 mr-2" />
                 {t.downloadShareFiles}
               </button>
               <button
                 onClick={downloadAllFiles}
-                className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+                className="flex items-center px-2 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors whitespace-nowrap"
               >
                 <Download className="w-4 h-4 mr-2" />
                 {t.downloadAll}

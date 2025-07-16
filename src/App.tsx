@@ -19,7 +19,10 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="relative text-center mb-8">
+          <div className="absolute top-0 right-0 mt-4 mr-4">
+            <LanguageSwitcher />
+          </div>
           <div className="flex justify-center items-center mb-4">
             <Shield className="w-12 h-12 text-indigo-600 mr-3" />
             <h1 className="text-4xl font-bold text-gray-800">
@@ -29,9 +32,6 @@ function App() {
           <p className="text-gray-600 text-lg">
             {t.appSubtitle}
           </p>
-          <div className="flex justify-center mt-4">
-            <LanguageSwitcher />
-          </div>
         </div>
 
         {/* Features */}
