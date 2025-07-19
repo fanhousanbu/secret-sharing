@@ -3,7 +3,10 @@ import { EncryptionResult } from './types';
 /**
  * 从密码派生密钥（使用PBKDF2）
  */
-export async function deriveKeyFromPassword(password: string, salt: ArrayBuffer): Promise<ArrayBuffer> {
+export async function deriveKeyFromPassword(
+  password: string,
+  salt: ArrayBuffer
+): Promise<ArrayBuffer> {
   const encoder = new TextEncoder();
   const passwordBuffer = encoder.encode(password);
 
@@ -22,12 +25,12 @@ export async function deriveKeyFromPassword(password: string, salt: ArrayBuffer)
       name: 'PBKDF2',
       salt: salt,
       iterations: 100000, // 10万次迭代
-      hash: 'SHA-256'
+      hash: 'SHA-256',
     },
     keyMaterial,
     {
       name: 'AES-GCM',
-      length: 256
+      length: 256,
     },
     true,
     ['encrypt', 'decrypt']
@@ -41,7 +44,10 @@ export async function deriveKeyFromPassword(password: string, salt: ArrayBuffer)
  * @param data 要加密的数据
  * @param userPassword 用户密码（可选）
  */
-export async function encryptData(data: ArrayBuffer, userPassword?: string): Promise<EncryptionResult & { salt?: ArrayBuffer }> {
+export async function encryptData(
+  data: ArrayBuffer,
+  userPassword?: string
+): Promise<EncryptionResult & { salt?: ArrayBuffer }> {
   let keyBuffer: ArrayBuffer;
   let salt: ArrayBuffer | undefined;
 
@@ -185,7 +191,10 @@ export function arrayBufferToBigInt(buffer: ArrayBuffer): bigint {
 /**
  * bigint转换为ArrayBuffer
  */
-export function bigIntToArrayBuffer(value: bigint, length: number): ArrayBuffer {
+export function bigIntToArrayBuffer(
+  value: bigint,
+  length: number
+): ArrayBuffer {
   const hex = value.toString(16).padStart(length * 2, '0');
   const bytes = new Uint8Array(length);
   for (let i = 0; i < length; i++) {
@@ -210,4 +219,4 @@ export async function calculateSHA256(data: ArrayBuffer): Promise<string> {
 export async function calculateFileSHA256(file: File): Promise<string> {
   const buffer = await file.arrayBuffer();
   return calculateSHA256(buffer);
-} 
+}

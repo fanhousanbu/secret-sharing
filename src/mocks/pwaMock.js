@@ -4,4 +4,4 @@ module.exports = {
     needRefresh: [false],
     updateServiceWorker: () => {},
   }),
-}; 
+};

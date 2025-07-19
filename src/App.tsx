@@ -27,34 +27,36 @@ function App() {
           </div>
           <div className="flex justify-center items-center mb-4">
             <Shield className="w-12 h-12 text-indigo-600 mr-3" />
-            <h1 className="text-4xl font-bold text-gray-800">
-              {t.appTitle}
-            </h1>
+            <h1 className="text-4xl font-bold text-gray-800">{t.appTitle}</h1>
           </div>
-          <p className="text-gray-600 text-lg">
-            {t.appSubtitle}
-          </p>
+          <p className="text-gray-600 text-lg">{t.appSubtitle}</p>
         </div>
 
         {/* Features */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg p-6 shadow-md">
             <Shield className="w-8 h-8 text-green-600 mb-3" />
-            <h3 className="font-semibold text-gray-800 mb-2">{t.featureSecureEncryption}</h3>
+            <h3 className="font-semibold text-gray-800 mb-2">
+              {t.featureSecureEncryption}
+            </h3>
             <p className="text-gray-600 text-sm">
               {t.featureSecureEncryptionDesc}
             </p>
           </div>
           <div className="bg-white rounded-lg p-6 shadow-md">
             <FileText className="w-8 h-8 text-blue-600 mb-3" />
-            <h3 className="font-semibold text-gray-800 mb-2">{t.featureSmartSplitting}</h3>
+            <h3 className="font-semibold text-gray-800 mb-2">
+              {t.featureSmartSplitting}
+            </h3>
             <p className="text-gray-600 text-sm">
               {t.featureSmartSplittingDesc}
             </p>
           </div>
           <div className="bg-white rounded-lg p-6 shadow-md">
             <Settings className="w-8 h-8 text-purple-600 mb-3" />
-            <h3 className="font-semibold text-gray-800 mb-2">{t.featureFlexibleRecovery}</h3>
+            <h3 className="font-semibold text-gray-800 mb-2">
+              {t.featureFlexibleRecovery}
+            </h3>
             <p className="text-gray-600 text-sm">
               {t.featureFlexibleRecoveryDesc}
             </p>
@@ -100,9 +102,7 @@ function App() {
             <Github className="w-5 h-5 mr-2" />
             <span>{t.footerOpenSource}</span>
           </div>
-          <p className="text-sm">
-            {t.footerDescription}
-          </p>
+          <p className="text-sm">{t.footerDescription}</p>
         </div>
       </div>
     </div>
@@ -110,4 +110,3 @@ function App() {
 }
 
 export default App;
- 

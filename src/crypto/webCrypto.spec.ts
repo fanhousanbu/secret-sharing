@@ -8,7 +8,7 @@ import {
   arrayBufferToBigInt,
   bigIntToArrayBuffer,
   calculateSHA256,
-  calculateFileSHA256
+  calculateFileSHA256,
 } from './webCrypto';
 
 // 模拟File API
@@ -18,11 +18,7 @@ global.File = class File {
   type: string;
   lastModified: number;
 
-  constructor(
-    bits: BlobPart[],
-    name: string,
-    options?: FilePropertyBag
-  ) {
+  constructor(bits: BlobPart[], name: string, options?: FilePropertyBag) {
     this.name = name;
     this.size = bits.reduce((acc, bit) => acc + (bit as any).length || 0, 0);
     this.type = options?.type || '';
@@ -37,9 +33,9 @@ global.File = class File {
 describe('WebCrypto工具函数', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // 设置默认的mock实现
-    (window.crypto.getRandomValues as jest.Mock).mockImplementation((arr) => {
+    (window.crypto.getRandomValues as jest.Mock).mockImplementation(arr => {
       for (let i = 0; i < arr.length; i++) {
         arr[i] = Math.floor(Math.random() * 256);
       }
@@ -51,18 +47,24 @@ describe('WebCrypto工具函数', () => {
     test('应该能够从密码派生密钥', async () => {
       const password = 'testPassword';
       const salt = new ArrayBuffer(16);
-      
+
       const mockKeyMaterial = {} as CryptoKey;
       const mockDerivedKey = {} as CryptoKey;
       const mockExportedKey = new ArrayBuffer(32);
-      
+
       // 设置正确的 mock 实现
-      (window.crypto.subtle.importKey as jest.Mock).mockResolvedValue(mockKeyMaterial);
-      (window.crypto.subtle.deriveKey as jest.Mock).mockResolvedValue(mockDerivedKey);
-      (window.crypto.subtle.exportKey as jest.Mock).mockResolvedValue(mockExportedKey);
-      
+      (window.crypto.subtle.importKey as jest.Mock).mockResolvedValue(
+        mockKeyMaterial
+      );
+      (window.crypto.subtle.deriveKey as jest.Mock).mockResolvedValue(
+        mockDerivedKey
+      );
+      (window.crypto.subtle.exportKey as jest.Mock).mockResolvedValue(
+        mockExportedKey
+      );
+
       const result = await deriveKeyFromPassword(password, salt);
-      
+
       expect(result).toBe(mockExportedKey);
       expect(window.crypto.subtle.importKey).toHaveBeenCalledWith(
         'raw',
@@ -76,12 +78,12 @@ describe('WebCrypto工具函数', () => {
           name: 'PBKDF2',
           salt: salt,
           iterations: 100000,
-          hash: 'SHA-256'
+          hash: 'SHA-256',
         },
         mockKeyMaterial,
         {
           name: 'AES-GCM',
-          length: 256
+          length: 256,
         },
         true,
         ['encrypt', 'decrypt']
@@ -100,15 +102,21 @@ describe('WebCrypto工具函数', () => {
       const mockExportedKey = new ArrayBuffer(32);
       const mockIv = new Uint8Array(12);
       const mockEncryptedData = new ArrayBuffer(20);
-      
-      (window.crypto.subtle.generateKey as jest.Mock).mockResolvedValue(mockKey);
-      (window.crypto.subtle.exportKey as jest.Mock).mockResolvedValue(mockExportedKey);
+
+      (window.crypto.subtle.generateKey as jest.Mock).mockResolvedValue(
+        mockKey
+      );
+      (window.crypto.subtle.exportKey as jest.Mock).mockResolvedValue(
+        mockExportedKey
+      );
       (window.crypto.subtle.importKey as jest.Mock).mockResolvedValue(mockKey);
-      (window.crypto.subtle.encrypt as jest.Mock).mockResolvedValue(mockEncryptedData);
+      (window.crypto.subtle.encrypt as jest.Mock).mockResolvedValue(
+        mockEncryptedData
+      );
       (window.crypto.getRandomValues as jest.Mock).mockReturnValue(mockIv);
-      
+
       const result = await encryptData(data);
-      
+
       expect(result.encryptedData).toBe(mockEncryptedData);
       expect(result.key).toBe(mockExportedKey);
       expect(result.iv).toBe(mockIv.buffer);
@@ -123,18 +131,22 @@ describe('WebCrypto工具函数', () => {
       const mockExportedKey = new ArrayBuffer(32);
       const mockIv = new Uint8Array(12);
       const mockEncryptedData = new ArrayBuffer(20);
-      
+
       (window.crypto.getRandomValues as jest.Mock)
         .mockReturnValueOnce(mockSalt) // 第一次调用生成salt
-        .mockReturnValueOnce(mockIv);  // 第二次调用生成iv
-      
+        .mockReturnValueOnce(mockIv); // 第二次调用生成iv
+
       (window.crypto.subtle.importKey as jest.Mock).mockResolvedValue(mockKey);
       (window.crypto.subtle.deriveKey as jest.Mock).mockResolvedValue(mockKey);
-      (window.crypto.subtle.exportKey as jest.Mock).mockResolvedValue(mockExportedKey);
-      (window.crypto.subtle.encrypt as jest.Mock).mockResolvedValue(mockEncryptedData);
-      
+      (window.crypto.subtle.exportKey as jest.Mock).mockResolvedValue(
+        mockExportedKey
+      );
+      (window.crypto.subtle.encrypt as jest.Mock).mockResolvedValue(
+        mockEncryptedData
+      );
+
       const result = await encryptData(data, password);
-      
+
       expect(result.encryptedData).toBe(mockEncryptedData);
       expect(result.key).toBe(mockExportedKey);
       expect(result.iv).toBe(mockIv.buffer);
@@ -150,12 +162,14 @@ describe('WebCrypto工具函数', () => {
       const iv = new ArrayBuffer(12);
       const mockKey = {} as CryptoKey;
       const mockDecryptedData = new ArrayBuffer(10);
-      
+
       (window.crypto.subtle.importKey as jest.Mock).mockResolvedValue(mockKey);
-      (window.crypto.subtle.decrypt as jest.Mock).mockResolvedValue(mockDecryptedData);
-      
+      (window.crypto.subtle.decrypt as jest.Mock).mockResolvedValue(
+        mockDecryptedData
+      );
+
       const result = await decryptData(encryptedData, keyBuffer, iv);
-      
+
       expect(result).toBe(mockDecryptedData);
       expect(window.crypto.subtle.importKey).toHaveBeenCalledWith(
         'raw',
@@ -178,14 +192,27 @@ describe('WebCrypto工具函数', () => {
       const iv = new ArrayBuffer(12);
       const mockKeyBuffer = new ArrayBuffer(32);
       const mockDecryptedData = new ArrayBuffer(10);
-      
-      (window.crypto.subtle.importKey as jest.Mock).mockResolvedValue({} as CryptoKey);
-      (window.crypto.subtle.deriveKey as jest.Mock).mockResolvedValue({} as CryptoKey);
-      (window.crypto.subtle.exportKey as jest.Mock).mockResolvedValue(mockKeyBuffer);
-      (window.crypto.subtle.decrypt as jest.Mock).mockResolvedValue(mockDecryptedData);
-      
-      const result = await decryptDataWithPassword(encryptedData, password, salt, iv);
-      
+
+      (window.crypto.subtle.importKey as jest.Mock).mockResolvedValue(
+        {} as CryptoKey
+      );
+      (window.crypto.subtle.deriveKey as jest.Mock).mockResolvedValue(
+        {} as CryptoKey
+      );
+      (window.crypto.subtle.exportKey as jest.Mock).mockResolvedValue(
+        mockKeyBuffer
+      );
+      (window.crypto.subtle.decrypt as jest.Mock).mockResolvedValue(
+        mockDecryptedData
+      );
+
+      const result = await decryptDataWithPassword(
+        encryptedData,
+        password,
+        salt,
+        iv
+      );
+
       expect(result).toBe(mockDecryptedData);
     });
   });
@@ -197,9 +224,9 @@ describe('WebCrypto工具函数', () => {
       uint8Array[0] = 65; // 'A'
       uint8Array[1] = 66; // 'B'
       uint8Array[2] = 67; // 'C'
-      
+
       const result = arrayBufferToBase64(buffer);
-      
+
       expect(result).toBe('QUJD'); // 'ABC'的base64编码
     });
   });
@@ -207,10 +234,10 @@ describe('WebCrypto工具函数', () => {
   describe('base64ToArrayBuffer', () => {
     test('应该能够将base64转换为ArrayBuffer', () => {
       const base64 = 'QUJD'; // 'ABC'的base64编码
-      
+
       const result = base64ToArrayBuffer(base64);
       const uint8Array = new Uint8Array(result);
-      
+
       expect(uint8Array[0]).toBe(65); // 'A'
       expect(uint8Array[1]).toBe(66); // 'B'
       expect(uint8Array[2]).toBe(67); // 'C'
@@ -225,9 +252,9 @@ describe('WebCrypto工具函数', () => {
       uint8Array[1] = 0x34;
       uint8Array[2] = 0x56;
       uint8Array[3] = 0x78;
-      
+
       const result = arrayBufferToBigInt(buffer);
-      
+
       expect(result).toBe(0x12345678n);
     });
   });
@@ -236,10 +263,10 @@ describe('WebCrypto工具函数', () => {
     test('应该能够将bigint转换为ArrayBuffer', () => {
       const value = 0x12345678n;
       const length = 4;
-      
+
       const result = bigIntToArrayBuffer(value, length);
       const uint8Array = new Uint8Array(result);
-      
+
       expect(uint8Array[0]).toBe(0x12);
       expect(uint8Array[1]).toBe(0x34);
       expect(uint8Array[2]).toBe(0x56);
@@ -251,11 +278,11 @@ describe('WebCrypto工具函数', () => {
     test('应该能够计算SHA256哈希', async () => {
       const data = new ArrayBuffer(10);
       const mockDigest = new Uint8Array(32);
-      
+
       (window.crypto.subtle.digest as jest.Mock).mockResolvedValue(mockDigest);
-      
+
       const result = await calculateSHA256(data);
-      
+
       expect(typeof result).toBe('string');
       expect(result.length).toBe(64); // SHA256哈希的十六进制字符串长度
       expect(window.crypto.subtle.digest).toHaveBeenCalledWith('SHA-256', data);
@@ -266,13 +293,13 @@ describe('WebCrypto工具函数', () => {
     test('应该能够计算文件的SHA256哈希', async () => {
       const mockFile = new File(['test content'], 'test.txt');
       const mockDigest = new Uint8Array(32);
-      
+
       (window.crypto.subtle.digest as jest.Mock).mockResolvedValue(mockDigest);
-      
+
       const result = await calculateFileSHA256(mockFile);
-      
+
       expect(typeof result).toBe('string');
       expect(result.length).toBe(64);
     });
   });
-}); 
+});
