@@ -48,7 +48,7 @@ document.createElement = jest.fn(() => ({
   click: jest.fn(),
   download: '',
   href: '',
-})) as any;
+})) as never;
 
 describe('WebFileProcessor', () => {
   let processor: WebFileProcessor;
