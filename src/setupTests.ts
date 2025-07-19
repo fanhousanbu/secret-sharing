@@ -57,28 +57,16 @@ global.File = class File {
   }
 } as any;
 
-// 模拟document.createElement
-document.createElement = jest.fn((tagName: string) => {
-  if (tagName === 'a') {
-    return {
-      click: jest.fn(),
-      download: '',
-      href: '',
-      appendChild: jest.fn(),
-      removeChild: jest.fn(),
-    } as any;
-  }
-  return {} as any;
-}) as any;
+
 
 // 模拟FileReader
 global.FileReader = class FileReader {
-  onload: ((this: FileReader, ev: ProgressEvent<FileReader>) => any) | null = null;
-  onerror: ((this: FileReader, ev: ProgressEvent<FileReader>) => any) | null = null;
-  onabort: ((this: FileReader, ev: ProgressEvent<FileReader>) => any) | null = null;
-  onloadstart: ((this: FileReader, ev: ProgressEvent<FileReader>) => any) | null = null;
-  onloadend: ((this: FileReader, ev: ProgressEvent<FileReader>) => any) | null = null;
-  onprogress: ((this: FileReader, ev: ProgressEvent<FileReader>) => any) | null = null;
+  onload: ((this: FileReader, ev: ProgressEvent) => any) | null = null;
+  onerror: ((this: FileReader, ev: ProgressEvent) => any) | null = null;
+  onabort: ((this: FileReader, ev: ProgressEvent) => any) | null = null;
+  onloadstart: ((this: FileReader, ev: ProgressEvent) => any) | null = null;
+  onloadend: ((this: FileReader, ev: ProgressEvent) => any) | null = null;
+  onprogress: ((this: FileReader, ev: ProgressEvent) => any) | null = null;
   readyState: number = 0;
   result: string | ArrayBuffer | null = null;
   error: DOMException | null = null;
@@ -90,7 +78,7 @@ global.FileReader = class FileReader {
     }, 0);
   }
 
-  readAsText(blob: Blob): void {
+  readAsText(_blob: Blob): void {
     setTimeout(() => {
       this.result = 'mock file content';
       this.onload?.(new ProgressEvent('load'));

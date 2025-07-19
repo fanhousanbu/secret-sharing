@@ -1,4 +1,4 @@
-import { Share, SecretSharingConfig, PureShamirRecoveryOptions, FileMetadata, RecoveryResult } from './types';
+import { Share, SecretSharingConfig, PureShamirRecoveryOptions, FileRecoveryResult } from './types';
 
 describe('TypeScript类型定义', () => {
   describe('Share类型', () => {
@@ -79,8 +79,8 @@ describe('TypeScript类型定义', () => {
 
   describe('FileMetadata类型', () => {
     test('应该能够创建基本的元数据对象', () => {
-      const metadata: FileMetadata = {
-        scheme: 'pure-shamir',
+      const metadata = {
+        scheme: 'pure-shamir' as const,
         threshold: 3,
         totalShares: 5,
         filename: 'test.txt',
@@ -101,8 +101,8 @@ describe('TypeScript类型定义', () => {
 
     test('应该能够创建带密码的元数据对象', () => {
       const salt = new ArrayBuffer(16);
-      const metadata: FileMetadata = {
-        scheme: 'pure-shamir',
+      const metadata = {
+        scheme: 'pure-shamir' as const,
         threshold: 3,
         totalShares: 5,
         filename: 'encrypted.txt',
@@ -124,7 +124,7 @@ describe('TypeScript类型定义', () => {
       const schemes = ['pure-shamir', 'legacy'] as const;
       
       schemes.forEach(scheme => {
-        const metadata: FileMetadata = {
+        const metadata = {
           scheme,
           threshold: 2,
           totalShares: 3,
@@ -143,8 +143,8 @@ describe('TypeScript类型定义', () => {
     });
 
     test('应该能够处理大文件元数据', () => {
-      const metadata: FileMetadata = {
-        scheme: 'pure-shamir',
+      const metadata = {
+        scheme: 'pure-shamir' as const,
         threshold: 5,
         totalShares: 10,
         filename: 'large-file.bin',
@@ -176,8 +176,8 @@ describe('TypeScript类型定义', () => {
         ],
       ];
       
-      const metadata: FileMetadata = {
-        scheme: 'pure-shamir',
+      const metadata = {
+        scheme: 'pure-shamir' as const,
         threshold: 2,
         totalShares: 3,
         filename: 'test.txt',
@@ -208,8 +208,8 @@ describe('TypeScript类型定义', () => {
         ],
       ];
       
-      const metadata: FileMetadata = {
-        scheme: 'pure-shamir',
+      const metadata = {
+        scheme: 'pure-shamir' as const,
         threshold: 1,
         totalShares: 1,
         filename: 'encrypted.txt',
@@ -235,7 +235,7 @@ describe('TypeScript类型定义', () => {
   describe('RecoveryResult类型', () => {
     test('应该能够创建恢复结果对象', () => {
       const data = new ArrayBuffer(100);
-      const result: RecoveryResult = {
+      const result: FileRecoveryResult = {
         data,
         recoveredSHA256: 'recovered-hash',
         filename: 'recovered.txt',
@@ -252,7 +252,7 @@ describe('TypeScript类型定义', () => {
       
       sizes.forEach(size => {
         const data = new ArrayBuffer(size);
-        const result: RecoveryResult = {
+        const result: FileRecoveryResult = {
           data,
           recoveredSHA256: `hash-${size}`,
           filename: `file-${size}.txt`,
@@ -274,7 +274,7 @@ describe('TypeScript类型定义', () => {
       ];
       
       specialNames.forEach(filename => {
-        const result: RecoveryResult = {
+        const result: FileRecoveryResult = {
           data: new ArrayBuffer(10),
           recoveredSHA256: 'hash',
           filename,
@@ -314,8 +314,8 @@ describe('TypeScript类型定义', () => {
     });
 
     test('FileMetadata应该包含所有必需属性', () => {
-      const metadata: FileMetadata = {
-        scheme: 'pure-shamir',
+      const metadata = {
+        scheme: 'pure-shamir' as const,
         threshold: 2,
         totalShares: 3,
         filename: 'test.txt',
@@ -362,7 +362,7 @@ describe('TypeScript类型定义', () => {
     });
 
     test('应该能够处理空数据', () => {
-      const result: RecoveryResult = {
+      const result: FileRecoveryResult = {
         data: new ArrayBuffer(0),
         recoveredSHA256: '',
         filename: '',

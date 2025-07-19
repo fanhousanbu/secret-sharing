@@ -292,6 +292,27 @@ describe('WebFileProcessor', () => {
       const options = {
         shares: [],
         metadata: {
+          scheme: 'pure-shamir' as const,
+          threshold: 2,
+          totalShares: 2,
+          filename: 'test.txt',
+          originalSize: 64,
+          processedSize: 64,
+          chunkSize: 32,
+          totalChunks: 2,
+          usePassword: false,
+          salt: undefined,
+          originalSHA256: 'mock-sha256-hash',
+        },
+      };
+      await expect(processor.recoverFilePureShamir(options)).rejects.toThrow('份额数据不完整');
+    });
+
+    test('should throw if shares is empty', async () => {
+      const options = {
+        shares: [],
+        metadata: {
+          scheme: 'pure-shamir' as const,
           threshold: 2,
           totalShares: 2,
           filename: 'test.txt',
@@ -311,6 +332,7 @@ describe('WebFileProcessor', () => {
       const options = {
         shares: [[{ id: 1, value: 123n, chunkIndex: 0, totalChunks: 1 }], []],
         metadata: {
+          scheme: 'pure-shamir' as const,
           threshold: 2,
           totalShares: 2,
           filename: 'test.txt',
@@ -576,10 +598,6 @@ describe('WebFileProcessor', () => {
 
   describe('downloadFile', () => {
     test('应该能够创建下载链接', () => {
-      const data = new ArrayBuffer(10);
-      const filename = 'test.txt';
-      const mimeType = 'text/plain';
-      
       // 跳过这个测试，因为它需要复杂的DOM模拟
       expect(true).toBe(true);
     });
@@ -587,9 +605,6 @@ describe('WebFileProcessor', () => {
 
   describe('downloadJson', () => {
     test('应该能够创建JSON下载链接', () => {
-      const data = { test: 'data' };
-      const filename = 'test.json';
-      
       // 跳过这个测试，因为它需要复杂的DOM模拟
       expect(true).toBe(true);
     });
@@ -625,12 +640,24 @@ describe('WebFileProcessor', () => {
     test('应该能够恢复文件', async () => {
       const encryptedData = new ArrayBuffer(64);
       const options = {
-        shares: [],
+        shares: [{ id: 1, value: 123n }, { id: 2, value: 456n }],
         metadata: {
-          scheme: 'pure-shamir',
+          threshold: 2,
+          totalShares: 2,
           filename: 'test.txt',
+          originalSize: 64,
+          iv: new ArrayBuffer(12),
+          usePassword: false,
         },
       };
+      
+      // Mock the required functions
+      const { recoverSecret } = require('./shamir');
+      const { bigIntToArrayBuffer } = require('./webCrypto');
+      const { decryptData } = require('./webCrypto');
+      recoverSecret.mockReturnValue(0x12345678n);
+      bigIntToArrayBuffer.mockReturnValue(new ArrayBuffer(32));
+      decryptData.mockResolvedValue(new ArrayBuffer(32));
       
       const result = await processor.recoverFile(encryptedData, options);
       
@@ -646,8 +673,12 @@ describe('WebFileProcessor', () => {
         { id: 2, value: 456n },
       ];
       const metadata = {
-        scheme: 'pure-shamir',
+        threshold: 2,
+        totalShares: 2,
         filename: 'test.txt',
+        originalSize: 64,
+        iv: new ArrayBuffer(12),
+        usePassword: false,
       };
       
       const result = processor.generateShareFiles(shares, metadata);
@@ -682,13 +713,6 @@ describe('WebFileProcessor', () => {
 
   describe('downloadHashRecord', () => {
     test('应该能够下载哈希记录', () => {
-      const result = {
-        data: new ArrayBuffer(10),
-        recoveredSHA256: 'mock-hash',
-        filename: 'test.txt',
-      };
-      const originalFilename = 'original.txt';
-      
       // 跳过这个测试，因为它需要复杂的DOM模拟
       expect(true).toBe(true);
     });
@@ -711,6 +735,8 @@ describe('WebFileProcessor', () => {
           threshold: 2,
           totalShares: 2,
           filename: 'test.txt',
+          originalSize: 64,
+          iv: new ArrayBuffer(12),
           usePassword: false,
         },
       };
@@ -725,6 +751,8 @@ describe('WebFileProcessor', () => {
           threshold: 1,
           totalShares: 1,
           filename: 'test.txt',
+          originalSize: 64,
+          iv: new ArrayBuffer(12),
           usePassword: true,
         },
       };
@@ -739,6 +767,8 @@ describe('WebFileProcessor', () => {
           threshold: 1,
           totalShares: 1,
           filename: 'test.txt',
+          originalSize: 64,
+          iv: new ArrayBuffer(12),
           usePassword: false,
         },
       };
@@ -755,6 +785,7 @@ describe('WebFileProcessor', () => {
           threshold: 1,
           totalShares: 1,
           filename: 'test.txt',
+          originalSize: 64,
           usePassword: true,
           salt: new ArrayBuffer(16),
           iv: new ArrayBuffer(12),
