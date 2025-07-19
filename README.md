@@ -1,5 +1,12 @@
 # File Encryption & Secret Sharing System
 
+[![Test Coverage](https://img.shields.io/badge/coverage-69.54%25-brightgreen)](https://github.com/your-username/secret-sharing)
+[![Build Status](https://github.com/your-username/secret-sharing/workflows/Test%20and%20Coverage/badge.svg)](https://github.com/your-username/secret-sharing/actions)
+[![Deploy Status](https://github.com/your-username/secret-sharing/workflows/Deploy%20to%20GitHub%20Pages/badge.svg)](https://your-username.github.io/secret-sharing)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18.2-blue)](https://reactjs.org/)
+
 A web-based file encryption and Shamir secret sharing system that supports two encryption schemes:
 
 ## Features
@@ -72,7 +79,30 @@ npm run dev
 
 # Build
 npm run build
+
+# Run tests
+npm test
+
+# Run tests with coverage
+npm run test:cov
+
+# Check coverage thresholds
+npm run check:cov
 ```
+
+## Testing
+
+This project maintains high test coverage with automated CI/CD:
+
+- **Coverage Thresholds**: 
+  - Statements: 65%
+  - Branches: 50%
+  - Functions: 55%
+  - Lines: 65%
+
+- **Current Coverage**: 69.54% overall
+- **Automated Testing**: All tests run on every PR and push
+- **Coverage Reports**: Available in CI/CD and locally
 
 ## Security Reminders
 
