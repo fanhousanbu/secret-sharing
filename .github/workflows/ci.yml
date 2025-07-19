@@ -35,6 +35,9 @@ jobs:
     - name: Run tests
       run: npm run test
       
+    - name: Build project
+      run: npm run build
+      
     - name: Upload coverage reports
       uses: codecov/codecov-action@v3
       with:

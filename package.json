@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 30",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 35",
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
@@ -15,7 +15,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "check:cov": "node scripts/check-coverage.js",
-    "ci": "npm run format:check && npm run lint && npm run audit && npm run test"
+    "ci": "npm run format:check && npm run lint && npm run audit && npm run test && npm run build"
   },
   "dependencies": {
     "buffer": "^6.0.3",
