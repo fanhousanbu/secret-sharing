@@ -1,0 +1,1 @@
+fix: resolve build errors after adding PWA support
