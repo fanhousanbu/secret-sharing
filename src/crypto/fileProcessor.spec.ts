@@ -155,7 +155,7 @@ describe('WebFileProcessor', () => {
       ];
       
       const metadata = {
-        scheme: 'pure-shamir',
+        scheme: 'pure-shamir' as const,
         threshold: 3,
         totalShares: 5,
         filename: 'test.txt',
@@ -200,7 +200,7 @@ describe('WebFileProcessor', () => {
       ];
       
       const metadata = {
-        scheme: 'pure-shamir',
+        scheme: 'pure-shamir' as const,
         threshold: 3,
         totalShares: 5,
         filename: 'test.txt',
@@ -232,7 +232,7 @@ describe('WebFileProcessor', () => {
     test('应该在缺少密码时抛出错误', async () => {
       const mockShares = [[]];
       const metadata = {
-        scheme: 'pure-shamir',
+        scheme: 'pure-shamir' as const,
         threshold: 3,
         totalShares: 5,
         filename: 'test.txt',
@@ -263,7 +263,7 @@ describe('WebFileProcessor', () => {
       ];
       
       const metadata = {
-        scheme: 'pure-shamir',
+        scheme: 'pure-shamir' as const,
         threshold: 3,
         totalShares: 5,
         filename: 'test.txt',
@@ -334,7 +334,7 @@ describe('WebFileProcessor', () => {
         ],
       ];
       const metadata = {
-        scheme: 'pure-shamir',
+        scheme: 'pure-shamir' as const,
         threshold: 2,
         totalShares: 2,
         filename: 'test.txt',
@@ -362,7 +362,7 @@ describe('WebFileProcessor', () => {
         ],
       ];
       const metadata = {
-        scheme: 'pure-shamir',
+        scheme: 'pure-shamir' as const,
         threshold: 2,
         totalShares: 2,
         filename: 'test.txt',
@@ -379,8 +379,7 @@ describe('WebFileProcessor', () => {
       mockRecoverSecret.mockReturnValueOnce(0x1n);
       const { decryptDataWithPassword } = require('./webCrypto');
       decryptDataWithPassword.mockImplementation(() => new ArrayBuffer(0));
-      // mock bigIntChunksToArrayBuffer 返回长度为1的ArrayBuffer
-      processor.bigIntChunksToArrayBuffer = jest.fn(() => new ArrayBuffer(1));
+      // 移除私有方法调用，直接测试异常情况
       await expect(processor.recoverFilePureShamir(options, password)).rejects.toThrow('密码错误或数据损坏');
     });
   });
@@ -399,7 +398,7 @@ describe('WebFileProcessor', () => {
       ];
       
       const metadata = {
-        scheme: 'pure-shamir',
+        scheme: 'pure-shamir' as const,
         threshold: 2,
         totalShares: 3,
         filename: 'test.txt',
@@ -498,6 +497,83 @@ describe('WebFileProcessor', () => {
     });
   });
 
+  describe('detectScheme 分支覆盖', () => {
+    test('should return scheme from metadata', () => {
+      const shareFileData = JSON.stringify({
+        metadata: {
+          scheme: 'pure-shamir',
+        },
+      });
+      
+      const result = processor.detectScheme(shareFileData);
+      
+      expect(result).toBe('pure-shamir');
+    });
+
+    test('should return pure-shamir when shareId and shares exist', () => {
+      const shareFileData = JSON.stringify({
+        shareId: 1,
+        shares: [],
+      });
+      
+      const result = processor.detectScheme(shareFileData);
+      
+      expect(result).toBe('pure-shamir');
+    });
+
+    test('should return hybrid as default', () => {
+      const shareFileData = JSON.stringify({
+        someOtherField: 'value',
+      });
+      
+      const result = processor.detectScheme(shareFileData);
+      
+      expect(result).toBe('hybrid');
+    });
+
+    test('should return hybrid when JSON.parse throws', () => {
+      const invalidData = 'invalid json';
+      
+      const result = processor.detectScheme(invalidData);
+      
+      expect(result).toBe('hybrid');
+    });
+
+    test('should return hybrid when metadata exists but no scheme', () => {
+      const shareFileData = JSON.stringify({
+        metadata: {
+          someField: 'value',
+        },
+      });
+      
+      const result = processor.detectScheme(shareFileData);
+      
+      expect(result).toBe('hybrid');
+    });
+
+    test('should return hybrid when shareId exists but no shares', () => {
+      const shareFileData = JSON.stringify({
+        shareId: 1,
+        someOtherField: 'value',
+      });
+      
+      const result = processor.detectScheme(shareFileData);
+      
+      expect(result).toBe('hybrid');
+    });
+
+    test('should return hybrid when shares exists but not array', () => {
+      const shareFileData = JSON.stringify({
+        shareId: 1,
+        shares: 'not-an-array',
+      });
+      
+      const result = processor.detectScheme(shareFileData);
+      
+      expect(result).toBe('hybrid');
+    });
+  });
+
   describe('downloadFile', () => {
     test('应该能够创建下载链接', () => {
       const data = new ArrayBuffer(10);
@@ -581,6 +657,8 @@ describe('WebFileProcessor', () => {
     });
   });
 
+
+
   describe('parseShareFiles', () => {
     test('应该能够解析份额文件', () => {
       const shareFilesData = [
@@ -599,6 +677,8 @@ describe('WebFileProcessor', () => {
       expect(result.metadata).toBeDefined();
     });
   });
+
+
 
   describe('downloadHashRecord', () => {
     test('应该能够下载哈希记录', () => {
@@ -663,6 +743,64 @@ describe('WebFileProcessor', () => {
         },
       };
       await expect(processor.recoverFile(encryptedData, options, '123')).rejects.toThrow('此文件未使用密码加密，无需提供密码');
+    });
+  });
+
+  describe('recoverFile 分支覆盖', () => {
+    test('should handle usePassword && userPassword && salt case', async () => {
+      const encryptedData = new ArrayBuffer(64);
+      const options = {
+        shares: [{ id: 1, value: 123n }],
+        metadata: {
+          threshold: 1,
+          totalShares: 1,
+          filename: 'test.txt',
+          usePassword: true,
+          salt: new ArrayBuffer(16),
+          iv: new ArrayBuffer(12),
+        },
+      };
+      const password = 'testPassword';
+      const { decryptDataWithPassword } = require('./webCrypto');
+      decryptDataWithPassword.mockResolvedValue(new ArrayBuffer(32));
+      
+      const result = await processor.recoverFile(encryptedData, options, password);
+      
+      expect(result).toBeDefined();
+      expect(decryptDataWithPassword).toHaveBeenCalledWith(
+        encryptedData,
+        password,
+        options.metadata.salt,
+        options.metadata.iv
+      );
+    });
+
+    test('should handle !usePassword case (recover key from shares)', async () => {
+      const encryptedData = new ArrayBuffer(64);
+      const options = {
+        shares: [{ id: 1, value: 123n }, { id: 2, value: 456n }],
+        metadata: {
+          threshold: 2,
+          totalShares: 2,
+          filename: 'test.txt',
+          originalSize: 64,
+          iv: new ArrayBuffer(12),
+          usePassword: false,
+        },
+      };
+      const { recoverSecret } = require('./shamir');
+      const { bigIntToArrayBuffer } = require('./webCrypto');
+      const { decryptData: decryptDataMock } = require('./webCrypto');
+      recoverSecret.mockReturnValue(0x12345678n);
+      bigIntToArrayBuffer.mockReturnValue(new ArrayBuffer(32));
+      decryptDataMock.mockResolvedValue(new ArrayBuffer(32));
+      
+      const result = await processor.recoverFile(encryptedData, options);
+      
+      expect(result).toBeDefined();
+      expect(recoverSecret).toHaveBeenCalledWith(options.shares, options.metadata.threshold);
+      expect(bigIntToArrayBuffer).toHaveBeenCalledWith(0x12345678n, 32);
+      expect(decryptDataMock).toHaveBeenCalledWith(encryptedData, expect.any(ArrayBuffer), options.metadata.iv);
     });
   });
 }); 
