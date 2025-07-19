@@ -20,12 +20,12 @@ global.TextDecoder = class TextDecoder {
 // 模拟window.crypto
 Object.defineProperty(window, 'crypto', {
   value: {
-    getRandomValues: (arr: Uint8Array) => {
+    getRandomValues: jest.fn((arr: Uint8Array) => {
       for (let i = 0; i < arr.length; i++) {
         arr[i] = Math.floor(Math.random() * 256);
       }
       return arr;
-    },
+    }),
     subtle: {
       generateKey: jest.fn(),
       encrypt: jest.fn(),

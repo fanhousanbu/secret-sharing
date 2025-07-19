@@ -11,27 +11,6 @@ import {
   calculateFileSHA256
 } from './webCrypto';
 
-// 模拟window.crypto
-Object.defineProperty(window, 'crypto', {
-  value: {
-    getRandomValues: jest.fn((arr: Uint8Array) => {
-      for (let i = 0; i < arr.length; i++) {
-        arr[i] = Math.floor(Math.random() * 256);
-      }
-      return arr;
-    }),
-    subtle: {
-      generateKey: jest.fn(),
-      encrypt: jest.fn(),
-      decrypt: jest.fn(),
-      importKey: jest.fn(),
-      exportKey: jest.fn(),
-      deriveKey: jest.fn(),
-      digest: jest.fn(),
-    },
-  },
-});
-
 // 模拟File API
 global.File = class File {
   name: string;
@@ -77,6 +56,7 @@ describe('WebCrypto工具函数', () => {
       const mockDerivedKey = {} as CryptoKey;
       const mockExportedKey = new ArrayBuffer(32);
       
+      // 设置正确的 mock 实现
       (window.crypto.subtle.importKey as jest.Mock).mockResolvedValue(mockKeyMaterial);
       (window.crypto.subtle.deriveKey as jest.Mock).mockResolvedValue(mockDerivedKey);
       (window.crypto.subtle.exportKey as jest.Mock).mockResolvedValue(mockExportedKey);
@@ -105,6 +85,10 @@ describe('WebCrypto工具函数', () => {
         },
         true,
         ['encrypt', 'decrypt']
+      );
+      expect(window.crypto.subtle.exportKey).toHaveBeenCalledWith(
+        'raw',
+        mockDerivedKey
       );
     });
   });
