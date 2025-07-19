@@ -132,29 +132,29 @@ export const FileEncryption: React.FC = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="bg-white rounded-lg p-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">{t.fileEncryptionAndSplitting}</h2>
+    <div className="mx-auto max-w-2xl">
+      <div className="p-6 bg-white rounded-lg">
+        <h2 className="mb-6 text-2xl font-bold text-gray-800">{t.fileEncryptionAndSplitting}</h2>
         
         {/* File Upload */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block mb-2 text-sm font-medium text-gray-700">
             {t.selectFile}
           </label>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-indigo-500 transition-colors">
+          <div className="p-6 text-center rounded-lg border-2 border-gray-300 border-dashed transition-colors hover:border-indigo-500">
             <input
               ref={fileInputRef}
               type="file"
               onChange={handleFileSelect}
               className="hidden"
             />
-            <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600 mb-2">
+            <Upload className="mx-auto mb-4 w-12 h-12 text-gray-400" />
+            <p className="mb-2 text-gray-600">
               {file ? file.name : t.selectOrDrag}
             </p>
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
+              className="px-4 py-2 text-white bg-indigo-600 rounded-md transition-colors hover:bg-indigo-700"
             >
               {t.selectFile}
             </button>
@@ -168,11 +168,11 @@ export const FileEncryption: React.FC = () => {
 
         {/* Scheme Selection */}
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-            <Settings className="w-5 h-5 mr-2" />
+          <h3 className="flex items-center mb-4 text-lg font-semibold text-gray-800">
+            <Settings className="mr-2 w-5 h-5" />
             {t.encryptionScheme}
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div 
               className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
                 scheme === 'hybrid' 
@@ -229,13 +229,13 @@ export const FileEncryption: React.FC = () => {
 
         {/* Configuration */}
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-            <Settings className="w-5 h-5 mr-2" />
+          <h3 className="flex items-center mb-4 text-lg font-semibold text-gray-800">
+            <Settings className="mr-2 w-5 h-5" />
             {t.splittingConfig}
           </h3>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block mb-2 text-sm font-medium text-gray-700">
                 {t.totalShares}
               </label>
               <input
@@ -244,11 +244,11 @@ export const FileEncryption: React.FC = () => {
                 max="10"
                 value={totalShares}
                 onChange={(e) => setTotalShares(parseInt(e.target.value))}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block mb-2 text-sm font-medium text-gray-700">
                 {t.threshold}
               </label>
               <input
@@ -257,7 +257,7 @@ export const FileEncryption: React.FC = () => {
                 max={totalShares}
                 value={threshold}
                 onChange={(e) => setThreshold(parseInt(e.target.value))}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
           </div>
@@ -282,28 +282,28 @@ export const FileEncryption: React.FC = () => {
             </div>
           
           {usePassword && (
-            <div className="space-y-4 p-4 bg-gray-50 rounded-md">
+            <div className="p-4 space-y-4 bg-gray-50 rounded-md">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block mb-2 text-sm font-medium text-gray-700">
                   {t.encryptionPassword}
                 </label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder={t.passwordPlaceholder}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block mb-2 text-sm font-medium text-gray-700">
                   {t.confirmPassword}
                 </label>
                 <input
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder={t.confirmPasswordPlaceholder}
                 />
               </div>
@@ -316,7 +316,7 @@ export const FileEncryption: React.FC = () => {
           )}
           
           {!usePassword && (
-            <div className="text-sm text-gray-600 p-4 bg-yellow-50 rounded-md">
+            <div className="p-4 text-sm text-gray-600 bg-yellow-50 rounded-md">
               <p>{t.noPasswordNote1}</p>
               <p>{t.noPasswordNote2}</p>
               <p>{t.noPasswordNote3}</p>
@@ -327,11 +327,11 @@ export const FileEncryption: React.FC = () => {
         {/* Pure Shamir Scheme Info */}
         {scheme === 'pure-shamir' && (
           <div className="mb-6">
-            <div className="text-sm text-gray-600 p-4 bg-blue-50 rounded-md">
+            <div className="p-4 text-sm text-gray-600 bg-blue-50 rounded-md">
               <div className="flex items-start">
                 <Info className="w-4 h-4 text-blue-500 mr-2 mt-0.5" />
                 <div>
-                  <p className="font-medium text-blue-700 mb-1">{t.pureShamirInfo}</p>
+                  <p className="mb-1 font-medium text-blue-700">{t.pureShamirInfo}</p>
                   <p>{t.pureShamirInfoDesc1}</p>
                   <p>{t.pureShamirInfoDesc2}</p>
                   <p>{t.pureShamirInfoDesc3}</p>
@@ -344,8 +344,8 @@ export const FileEncryption: React.FC = () => {
 
         {/* Error Message */}
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-center">
-            <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
+          <div className="flex items-center p-3 mb-4 bg-red-50 rounded-md border border-red-200">
+            <AlertCircle className="mr-2 w-5 h-5 text-red-500" />
             <span className="text-red-700">{error}</span>
           </div>
         )}
@@ -365,14 +365,14 @@ export const FileEncryption: React.FC = () => {
 
         {/* Result */}
         {result && (
-          <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-md">
+          <div className="p-4 mt-6 bg-green-50 rounded-md border border-green-200">
             <div className="flex items-center mb-3">
-              <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
-              <span className="text-green-800 font-medium">
+              <CheckCircle className="mr-2 w-5 h-5 text-green-600" />
+              <span className="font-medium text-green-800">
                 {result.scheme === 'hybrid' ? t.encryptionComplete : t.fileSplittingComplete}
               </span>
             </div>
-            <div className="text-sm text-gray-700 mb-4">
+            <div className="mb-4 text-sm text-gray-700">
               {result.scheme === 'hybrid' ? (
                 <>
                   <p>{formatMessage('encryptionCompleteDesc1', { totalShares })}</p>
@@ -391,40 +391,40 @@ export const FileEncryption: React.FC = () => {
                   <summary className="text-sm text-gray-600 cursor-pointer hover:text-gray-800">
                     {t.viewFileFingerprint}
                   </summary>
-                  <div className="mt-2 p-3 bg-gray-50 rounded-md">
-                    <p className="font-medium text-gray-800 mb-1">{t.fileSHA256Fingerprint}</p>
-                    <p className="text-xs text-gray-600 font-mono break-all bg-white p-2 rounded">
+                  <div className="p-3 mt-2 bg-gray-50 rounded-md">
+                    <p className="mb-1 font-medium text-gray-800">{t.fileSHA256Fingerprint}</p>
+                    <p className="p-2 font-mono text-xs text-gray-600 break-all bg-white rounded">
                       {result.metadata.originalSHA256}
                     </p>
-                    <p className="text-xs text-gray-500 mt-2">
+                    <p className="mt-2 text-xs text-gray-500">
                       {t.recordSHA256Note}
                     </p>
                   </div>
                 </details>
               )}
             </div>
-            <div className="flex flex-wrap justify-center gap-2">
+            <div className="flex flex-wrap gap-2 justify-center">
               {result.scheme === 'hybrid' && (
                 <button
                   onClick={downloadEncryptedFile}
-                  className="flex items-center px-2 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors whitespace-nowrap"
+                  className="flex items-center px-2 py-2 text-white whitespace-nowrap bg-blue-600 rounded-md transition-colors hover:bg-blue-700"
                 >
-                  <Download className="w-4 h-4 mr-2" />
+                  <Download className="mr-2 w-4 h-4" />
                   {t.downloadEncryptedFile}
                 </button>
               )}
               <button
                 onClick={downloadShareFiles}
-                className="flex items-center px-2 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors whitespace-nowrap"
+                className="flex items-center px-2 py-2 text-white whitespace-nowrap bg-green-600 rounded-md transition-colors hover:bg-green-700"
               >
-                <Download className="w-4 h-4 mr-2" />
+                <Download className="mr-2 w-4 h-4" />
                 {t.downloadShareFiles}
               </button>
               <button
                 onClick={downloadAllFiles}
-                className="flex items-center px-2 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors whitespace-nowrap"
+                className="flex items-center px-2 py-2 text-white whitespace-nowrap bg-indigo-600 rounded-md transition-colors hover:bg-indigo-700"
               >
-                <Download className="w-4 h-4 mr-2" />
+                <Download className="mr-2 w-4 h-4" />
                 {t.downloadAll}
               </button>
             </div>
