@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { FileEncryption } from './components/FileEncryption';
 import { FileRecovery } from './components/FileRecovery';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
+import PwaUpdateNotification from './components/PwaUpdateNotification'; // Import the new component
 import { Shield, FileText, Settings, Github } from 'lucide-react';
 import { useI18n } from './i18n/index';
 
@@ -17,6 +18,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <PwaUpdateNotification /> {/* Add the component here */}
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="relative text-center mb-8">
