@@ -1,4 +1,5 @@
 # File Encryption & Secret Sharing System
+[简体中文](README_CN.md)
 
 [![Test Coverage](https://img.shields.io/badge/coverage-69.54%25-brightgreen)](https://github.com/fanhousanbu/secret-sharing)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/fanhousanbu/secret-sharing/actions)
@@ -8,6 +9,14 @@
 [![React](https://img.shields.io/badge/React-18.2-blue)](https://reactjs.org/)
 
 A web-based file encryption and Shamir secret sharing system that supports two encryption schemes:
+
+## ✨ Purely Front-End for Maximum Privacy
+
+This is a pure front-end application. **All operations, including file selection, encryption, and secret sharing, are performed entirely within your browser.**
+
+- **No Data Transmission**: Your files, passwords, or any other sensitive information are **never** uploaded or sent to any server.
+- **Client-Side Operations**: All cryptographic calculations happen locally on your machine using the standard Web Crypto API.
+- **Maximum Security**: This design ensures that your private data never leaves your computer, providing the highest level of security and privacy. You can even disconnect from the internet after loading the page and continue to use the application.
 
 ## Features
 
@@ -62,7 +71,7 @@ The system automatically provides:
 
 ## Security
 
-- All encryption operations performed on client-side
+- **Client-Side Only**: All encryption operations are performed locally in your browser. No data is ever sent to a server, ensuring your files and passwords remain private.
 - Uses strong encryption algorithms (AES-256-GCM)
 - Key derivation uses PBKDF2 (100,000 iterations)
 - Supports password protection for dual security
@@ -109,4 +118,4 @@ This project maintains high test coverage with automated CI/CD:
 - Please keep share files and passwords secure
 - Recommend storing share files in distributed locations
 - Regularly verify integrity of share files
-- Important files should be backed up 
+- Important files should be backed up
