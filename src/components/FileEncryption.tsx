@@ -12,15 +12,15 @@ import { SecretSharingConfig, EncryptionScheme } from '../crypto/types';
 import { useI18n } from '../i18n/index';
 
 interface HybridResult {
-  shares: never[];
-  metadata: never;
+  shares: any[];
+  metadata: any;
   encryptedData: ArrayBuffer;
   scheme: 'hybrid';
 }
 
 interface PureShamirResult {
-  shares: never[][];
-  metadata: never;
+  shares: any[][];
+  metadata: any;
   scheme: 'pure-shamir';
 }
 
