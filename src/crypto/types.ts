@@ -123,14 +123,18 @@ export interface PureShamirShareFile {
 }
 
 // 统一的分割结果类型
-export type UnifiedSplitResult = FileSplitResult & { scheme: 'hybrid' } | PureShamirSplitResult;
+export type UnifiedSplitResult =
+  | (FileSplitResult & { scheme: 'hybrid' })
+  | PureShamirSplitResult;
 
 // 统一的恢复选项类型
-export type UnifiedRecoveryOptions = RecoveryOptions & { scheme: 'hybrid' } | PureShamirRecoveryOptions;
+export type UnifiedRecoveryOptions =
+  | (RecoveryOptions & { scheme: 'hybrid' })
+  | PureShamirRecoveryOptions;
 
 // 文件恢复结果
 export interface FileRecoveryResult {
   data: ArrayBuffer;
   recoveredSHA256: string;
   filename: string;
-} 
+}

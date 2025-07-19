@@ -12,17 +12,17 @@ jest.mock('../crypto/fileProcessor', () => ({
       data: new ArrayBuffer(0),
       filename: 'test.txt',
       hash: 'test-hash',
-      recoveredSHA256: 'test-sha256'
+      recoveredSHA256: 'test-sha256',
     }),
     recoverFilePureShamir: jest.fn().mockResolvedValue({
       data: new ArrayBuffer(0),
       filename: 'test.txt',
       hash: 'test-hash',
-      recoveredSHA256: 'test-sha256'
+      recoveredSHA256: 'test-sha256',
     }),
     downloadFile: jest.fn(),
-    downloadHashRecord: jest.fn()
-  }))
+    downloadHashRecord: jest.fn(),
+  })),
 }));
 
 jest.mock('../i18n', () => ({
@@ -90,11 +90,15 @@ describe('FileRecovery Component', () => {
 
   test('should handle encrypted file selection', async () => {
     render(<FileRecovery />);
-    const file = new File(['test content'], 'test.encrypted', { type: 'application/octet-stream' });
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-    
+    const file = new File(['test content'], 'test.encrypted', {
+      type: 'application/octet-stream',
+    });
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
+
     fireEvent.change(fileInput, { target: { files: [file] } });
-    
+
     await waitFor(() => {
       expect(screen.getByText('test.encrypted')).toBeInTheDocument();
     });
@@ -102,12 +106,16 @@ describe('FileRecovery Component', () => {
 
   test('should handle share files selection', async () => {
     render(<FileRecovery />);
-    const shareFile = new File(['{"metadata": {"usePassword": false}}'], 'share1.json', { type: 'application/json' });
+    const shareFile = new File(
+      ['{"metadata": {"usePassword": false}}'],
+      'share1.json',
+      { type: 'application/json' }
+    );
     const fileInputs = document.querySelectorAll('input[type="file"]');
     const shareFileInput = fileInputs[1] as HTMLInputElement;
-    
+
     fireEvent.change(shareFileInput, { target: { files: [shareFile] } });
-    
+
     await waitFor(() => {
       expect(screen.getByText('share1.json')).toBeInTheDocument();
     });
@@ -115,8 +123,12 @@ describe('FileRecovery Component', () => {
 
   test('should show remove button for encrypted file', async () => {
     render(<FileRecovery />);
-    const file = new File(['test content'], 'test.encrypted', { type: 'application/octet-stream' });
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const file = new File(['test content'], 'test.encrypted', {
+      type: 'application/octet-stream',
+    });
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
     fireEvent.change(fileInput, { target: { files: [file] } });
     await waitFor(() => {
       // 检查是否有删除按钮（通过按钮数量变化）
@@ -127,7 +139,11 @@ describe('FileRecovery Component', () => {
 
   test('should show remove button for share files', async () => {
     render(<FileRecovery />);
-    const shareFile = new File(['{"metadata": {"usePassword": false}}'], 'share1.json', { type: 'application/json' });
+    const shareFile = new File(
+      ['{"metadata": {"usePassword": false}}'],
+      'share1.json',
+      { type: 'application/json' }
+    );
     const fileInputs = document.querySelectorAll('input[type="file"]');
     const shareFileInput = fileInputs[1] as HTMLInputElement;
     fireEvent.change(shareFileInput, { target: { files: [shareFile] } });
@@ -139,7 +155,13 @@ describe('FileRecovery Component', () => {
 
   test('should show scheme detection info', async () => {
     render(<FileRecovery />);
-    const shareFile = new File(['{"metadata": {"scheme": "hybrid", "usePassword": false}, "share": {"id": 1, "value": "123"}}'], 'share1.json', { type: 'application/json' });
+    const shareFile = new File(
+      [
+        '{"metadata": {"scheme": "hybrid", "usePassword": false}, "share": {"id": 1, "value": "123"}}',
+      ],
+      'share1.json',
+      { type: 'application/json' }
+    );
     const fileInputs = document.querySelectorAll('input[type="file"]');
     const shareFileInput = fileInputs[1] as HTMLInputElement;
     fireEvent.change(shareFileInput, { target: { files: [shareFile] } });
@@ -152,12 +174,16 @@ describe('FileRecovery Component', () => {
 
   test('should show pure shamir upload note', async () => {
     render(<FileRecovery />);
-    const shareFile = new File(['{"metadata": {"usePassword": false}}'], 'share1.json', { type: 'application/json' });
+    const shareFile = new File(
+      ['{"metadata": {"usePassword": false}}'],
+      'share1.json',
+      { type: 'application/json' }
+    );
     const fileInputs = document.querySelectorAll('input[type="file"]');
     const shareFileInput = fileInputs[1] as HTMLInputElement;
-    
+
     fireEvent.change(shareFileInput, { target: { files: [shareFile] } });
-    
+
     await waitFor(() => {
       // Check that the component renders properly after file selection
       expect(screen.getByText('share1.json')).toBeInTheDocument();
@@ -166,12 +192,16 @@ describe('FileRecovery Component', () => {
 
   test('should show file count', async () => {
     render(<FileRecovery />);
-    const shareFile = new File(['{"metadata": {"usePassword": false}}'], 'share1.json', { type: 'application/json' });
+    const shareFile = new File(
+      ['{"metadata": {"usePassword": false}}'],
+      'share1.json',
+      { type: 'application/json' }
+    );
     const fileInputs = document.querySelectorAll('input[type="file"]');
     const shareFileInput = fileInputs[1] as HTMLInputElement;
-    
+
     fireEvent.change(shareFileInput, { target: { files: [shareFile] } });
-    
+
     await waitFor(() => {
       expect(screen.getByText('filesCount')).toBeInTheDocument();
     });
@@ -179,12 +209,16 @@ describe('FileRecovery Component', () => {
 
   test('should show pure shamir tip', async () => {
     render(<FileRecovery />);
-    const shareFile = new File(['{"metadata": {"usePassword": false}}'], 'share1.json', { type: 'application/json' });
+    const shareFile = new File(
+      ['{"metadata": {"usePassword": false}}'],
+      'share1.json',
+      { type: 'application/json' }
+    );
     const fileInputs = document.querySelectorAll('input[type="file"]');
     const shareFileInput = fileInputs[1] as HTMLInputElement;
-    
+
     fireEvent.change(shareFileInput, { target: { files: [shareFile] } });
-    
+
     await waitFor(() => {
       // Check that the component renders properly after file selection
       expect(screen.getByText('share1.json')).toBeInTheDocument();
@@ -200,7 +234,7 @@ describe('FileRecovery Component', () => {
   test('should have proper styling classes', () => {
     render(<FileRecovery />);
     const containers = screen.getAllByRole('generic');
-    const mainContainer = containers.find(container => 
+    const mainContainer = containers.find(container =>
       container.className.includes('max-w-2xl')
     );
     expect(mainContainer).toBeInTheDocument();
@@ -214,11 +248,15 @@ describe('FileRecovery Component', () => {
 
   test('should show file size when encrypted file is selected', async () => {
     render(<FileRecovery />);
-    const file = new File(['test content'], 'test.encrypted', { type: 'application/octet-stream' });
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-    
+    const file = new File(['test content'], 'test.encrypted', {
+      type: 'application/octet-stream',
+    });
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
+
     fireEvent.change(fileInput, { target: { files: [file] } });
-    
+
     await waitFor(() => {
       expect(screen.getByText(/KB/)).toBeInTheDocument();
     });
@@ -227,7 +265,7 @@ describe('FileRecovery Component', () => {
   test('should be accessible', () => {
     render(<FileRecovery />);
     const buttons = screen.getAllByRole('button');
-    
+
     buttons.forEach(button => {
       expect(button).toBeInTheDocument();
     });
@@ -235,13 +273,23 @@ describe('FileRecovery Component', () => {
 
   test('should handle multiple file selection', async () => {
     render(<FileRecovery />);
-    const shareFile1 = new File(['{"metadata": {"usePassword": false}}'], 'share1.json', { type: 'application/json' });
-    const shareFile2 = new File(['{"metadata": {"usePassword": false}}'], 'share2.json', { type: 'application/json' });
+    const shareFile1 = new File(
+      ['{"metadata": {"usePassword": false}}'],
+      'share1.json',
+      { type: 'application/json' }
+    );
+    const shareFile2 = new File(
+      ['{"metadata": {"usePassword": false}}'],
+      'share2.json',
+      { type: 'application/json' }
+    );
     const fileInputs = document.querySelectorAll('input[type="file"]');
     const shareFileInput = fileInputs[1] as HTMLInputElement;
-    
-    fireEvent.change(shareFileInput, { target: { files: [shareFile1, shareFile2] } });
-    
+
+    fireEvent.change(shareFileInput, {
+      target: { files: [shareFile1, shareFile2] },
+    });
+
     await waitFor(() => {
       expect(screen.getByText('share1.json')).toBeInTheDocument();
       expect(screen.getByText('share2.json')).toBeInTheDocument();
@@ -250,15 +298,19 @@ describe('FileRecovery Component', () => {
 
   test('should show selected share files label', async () => {
     render(<FileRecovery />);
-    const shareFile = new File(['{"metadata": {"usePassword": false}}'], 'share1.json', { type: 'application/json' });
+    const shareFile = new File(
+      ['{"metadata": {"usePassword": false}}'],
+      'share1.json',
+      { type: 'application/json' }
+    );
     const fileInputs = document.querySelectorAll('input[type="file"]');
     const shareFileInput = fileInputs[1] as HTMLInputElement;
-    
+
     fireEvent.change(shareFileInput, { target: { files: [shareFile] } });
-    
+
     await waitFor(() => {
       // Check that the component renders properly after file selection
       expect(screen.getByText('share1.json')).toBeInTheDocument();
     });
   });
-}); 
+});

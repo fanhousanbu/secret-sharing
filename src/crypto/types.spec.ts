@@ -1,4 +1,9 @@
-import { Share, SecretSharingConfig, PureShamirRecoveryOptions, FileRecoveryResult } from './types';
+import {
+  Share,
+  SecretSharingConfig,
+  PureShamirRecoveryOptions,
+  FileRecoveryResult,
+} from './types';
 
 describe('TypeScript类型定义', () => {
   describe('Share类型', () => {
@@ -7,7 +12,7 @@ describe('TypeScript类型定义', () => {
         id: 1,
         value: 123456789n,
       };
-      
+
       expect(share.id).toBe(1);
       expect(share.value).toBe(123456789n);
       expect(typeof share.id).toBe('number');
@@ -20,7 +25,7 @@ describe('TypeScript类型定义', () => {
         { id: 2, value: 200n },
         { id: 3, value: 300n },
       ];
-      
+
       expect(shares).toHaveLength(3);
       shares.forEach((share, index) => {
         expect(share.id).toBe(index + 1);
@@ -33,7 +38,7 @@ describe('TypeScript类型定义', () => {
         id: 1,
         value: 2n ** 100n,
       };
-      
+
       expect(share.value).toBeGreaterThan(0n);
       expect(typeof share.value).toBe('bigint');
     });
@@ -45,7 +50,7 @@ describe('TypeScript类型定义', () => {
         threshold: 3,
         totalShares: 5,
       };
-      
+
       expect(config.threshold).toBe(3);
       expect(config.totalShares).toBe(5);
       expect(typeof config.threshold).toBe('number');
@@ -58,7 +63,7 @@ describe('TypeScript类型定义', () => {
         { threshold: 5, totalShares: 7 },
         { threshold: 10, totalShares: 15 },
       ];
-      
+
       configs.forEach(config => {
         expect(config.threshold).toBeGreaterThan(0);
         expect(config.totalShares).toBeGreaterThan(0);
@@ -71,7 +76,7 @@ describe('TypeScript类型定义', () => {
         threshold: 1,
         totalShares: 1,
       };
-      
+
       expect(config.threshold).toBe(1);
       expect(config.totalShares).toBe(1);
     });
@@ -92,7 +97,7 @@ describe('TypeScript类型定义', () => {
         salt: undefined,
         originalSHA256: 'mock-hash',
       };
-      
+
       expect(metadata.scheme).toBe('pure-shamir');
       expect(metadata.filename).toBe('test.txt');
       expect(metadata.usePassword).toBe(false);
@@ -114,7 +119,7 @@ describe('TypeScript类型定义', () => {
         salt,
         originalSHA256: 'encrypted-hash',
       };
-      
+
       expect(metadata.usePassword).toBe(true);
       expect(metadata.salt).toBe(salt);
       expect(metadata.salt).toBeInstanceOf(ArrayBuffer);
@@ -122,7 +127,7 @@ describe('TypeScript类型定义', () => {
 
     test('应该能够处理不同的方案', () => {
       const schemes = ['pure-shamir', 'legacy'] as const;
-      
+
       schemes.forEach(scheme => {
         const metadata = {
           scheme,
@@ -137,7 +142,7 @@ describe('TypeScript类型定义', () => {
           salt: undefined,
           originalSHA256: 'hash',
         };
-        
+
         expect(metadata.scheme).toBe(scheme);
       });
     });
@@ -156,7 +161,7 @@ describe('TypeScript类型定义', () => {
         salt: undefined,
         originalSHA256: 'large-file-hash',
       };
-      
+
       expect(metadata.originalSize).toBeGreaterThan(0);
       expect(metadata.totalChunks).toBeGreaterThan(0);
       expect(metadata.chunkSize).toBeGreaterThan(0);
@@ -175,7 +180,7 @@ describe('TypeScript类型定义', () => {
           { id: 2, value: 400n, chunkIndex: 1, totalChunks: 2 },
         ],
       ];
-      
+
       const metadata = {
         scheme: 'pure-shamir' as const,
         threshold: 2,
@@ -189,12 +194,12 @@ describe('TypeScript类型定义', () => {
         salt: undefined,
         originalSHA256: 'hash',
       };
-      
+
       const options: PureShamirRecoveryOptions = {
         shares,
         metadata,
       };
-      
+
       expect(options.shares).toBe(shares);
       expect(options.metadata).toBe(metadata);
       expect(options.shares).toHaveLength(2);
@@ -202,12 +207,8 @@ describe('TypeScript类型定义', () => {
     });
 
     test('应该能够处理带密码的恢复选项', () => {
-      const shares = [
-        [
-          { id: 1, value: 100n, chunkIndex: 0, totalChunks: 1 },
-        ],
-      ];
-      
+      const shares = [[{ id: 1, value: 100n, chunkIndex: 0, totalChunks: 1 }]];
+
       const metadata = {
         scheme: 'pure-shamir' as const,
         threshold: 1,
@@ -221,12 +222,12 @@ describe('TypeScript类型定义', () => {
         salt: new ArrayBuffer(16),
         originalSHA256: 'encrypted-hash',
       };
-      
+
       const options: PureShamirRecoveryOptions = {
         shares,
         metadata,
       };
-      
+
       expect(options.metadata.usePassword).toBe(true);
       expect(options.metadata.salt).toBeInstanceOf(ArrayBuffer);
     });
@@ -240,7 +241,7 @@ describe('TypeScript类型定义', () => {
         recoveredSHA256: 'recovered-hash',
         filename: 'recovered.txt',
       };
-      
+
       expect(result.data).toBe(data);
       expect(result.recoveredSHA256).toBe('recovered-hash');
       expect(result.filename).toBe('recovered.txt');
@@ -249,7 +250,7 @@ describe('TypeScript类型定义', () => {
 
     test('应该能够处理不同大小的数据', () => {
       const sizes = [0, 1, 100, 1024, 1024 * 1024];
-      
+
       sizes.forEach(size => {
         const data = new ArrayBuffer(size);
         const result: FileRecoveryResult = {
@@ -257,7 +258,7 @@ describe('TypeScript类型定义', () => {
           recoveredSHA256: `hash-${size}`,
           filename: `file-${size}.txt`,
         };
-        
+
         expect(result.data.byteLength).toBe(size);
         expect(result.filename).toBe(`file-${size}.txt`);
       });
@@ -272,14 +273,14 @@ describe('TypeScript类型定义', () => {
         '中文文件名.txt',
         'file-123.txt',
       ];
-      
+
       specialNames.forEach(filename => {
         const result: FileRecoveryResult = {
           data: new ArrayBuffer(10),
           recoveredSHA256: 'hash',
           filename,
         };
-        
+
         expect(result.filename).toBe(filename);
       });
     });
@@ -291,7 +292,7 @@ describe('TypeScript类型定义', () => {
         { id: 1, value: 100n },
         { id: 2, value: 200n },
       ];
-      
+
       expect(shares).toHaveLength(2);
       shares.forEach(share => {
         expect(share).toHaveProperty('id');
@@ -306,7 +307,7 @@ describe('TypeScript类型定义', () => {
         threshold: 2,
         totalShares: 3,
       };
-      
+
       expect(config).toHaveProperty('threshold');
       expect(config).toHaveProperty('totalShares');
       expect(typeof config.threshold).toBe('number');
@@ -327,13 +328,21 @@ describe('TypeScript类型定义', () => {
         salt: undefined,
         originalSHA256: 'hash',
       };
-      
+
       const requiredProperties = [
-        'scheme', 'threshold', 'totalShares', 'filename',
-        'originalSize', 'processedSize', 'chunkSize', 'totalChunks',
-        'usePassword', 'salt', 'originalSHA256'
+        'scheme',
+        'threshold',
+        'totalShares',
+        'filename',
+        'originalSize',
+        'processedSize',
+        'chunkSize',
+        'totalChunks',
+        'usePassword',
+        'salt',
+        'originalSHA256',
       ];
-      
+
       requiredProperties.forEach(prop => {
         expect(metadata).toHaveProperty(prop);
       });
@@ -346,7 +355,7 @@ describe('TypeScript类型定义', () => {
         id: 0,
         value: 0n,
       };
-      
+
       expect(share.id).toBe(0);
       expect(share.value).toBe(0n);
     });
@@ -356,7 +365,7 @@ describe('TypeScript类型定义', () => {
         id: Number.MAX_SAFE_INTEGER,
         value: 2n ** 1000n,
       };
-      
+
       expect(share.id).toBe(Number.MAX_SAFE_INTEGER);
       expect(share.value).toBeGreaterThan(0n);
     });
@@ -367,10 +376,10 @@ describe('TypeScript类型定义', () => {
         recoveredSHA256: '',
         filename: '',
       };
-      
+
       expect(result.data.byteLength).toBe(0);
       expect(result.recoveredSHA256).toBe('');
       expect(result.filename).toBe('');
     });
   });
-}); 
+});

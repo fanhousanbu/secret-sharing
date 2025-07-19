@@ -45,19 +45,13 @@ global.File = class File {
   type: string;
   lastModified: number;
 
-  constructor(
-    bits: BlobPart[],
-    name: string,
-    options?: FilePropertyBag
-  ) {
+  constructor(bits: BlobPart[], name: string, options?: FilePropertyBag) {
     this.name = name;
     this.size = bits.reduce((acc, bit) => acc + (bit as any).length || 0, 0);
     this.type = options?.type || '';
     this.lastModified = options?.lastModified || Date.now();
   }
 } as any;
-
-
 
 // 模拟FileReader
 global.FileReader = class FileReader {
@@ -88,4 +82,4 @@ global.FileReader = class FileReader {
   abort(): void {
     this.onabort?.(new ProgressEvent('abort'));
   }
-} as any; 
+} as any;

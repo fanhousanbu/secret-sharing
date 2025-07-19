@@ -5,15 +5,21 @@ import App from './App';
 
 // Mock child components
 jest.mock('./components/FileEncryption', () => ({
-  FileEncryption: () => <div data-testid="file-encryption">FileEncryption Component</div>
+  FileEncryption: () => (
+    <div data-testid="file-encryption">FileEncryption Component</div>
+  ),
 }));
 
 jest.mock('./components/FileRecovery', () => ({
-  FileRecovery: () => <div data-testid="file-recovery">FileRecovery Component</div>
+  FileRecovery: () => (
+    <div data-testid="file-recovery">FileRecovery Component</div>
+  ),
 }));
 
 jest.mock('./components/LanguageSwitcher', () => ({
-  LanguageSwitcher: () => <div data-testid="language-switcher">LanguageSwitcher Component</div>
+  LanguageSwitcher: () => (
+    <div data-testid="language-switcher">LanguageSwitcher Component</div>
+  ),
 }));
 
 jest.mock('./i18n', () => ({
@@ -105,4 +111,4 @@ describe('App Component', () => {
     const container = document.querySelector('.container');
     expect(container).toBeInTheDocument();
   });
-}); 
+});

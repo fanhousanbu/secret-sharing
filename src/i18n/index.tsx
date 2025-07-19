@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 import { Language, TranslationKey, Translations } from './types';
 import { en } from './en';
 import { zh } from './zh';
@@ -59,4 +65,4 @@ export const useI18n = (): I18nContextType => {
 };
 
 export * from './types';
-export { en, zh }; 
+export { en, zh };

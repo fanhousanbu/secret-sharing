@@ -1,5 +1,12 @@
 import React, { useState, useRef } from 'react';
-import { Upload, Download, Settings, AlertCircle, CheckCircle, Info } from 'lucide-react';
+import {
+  Upload,
+  Download,
+  Settings,
+  AlertCircle,
+  CheckCircle,
+  Info,
+} from 'lucide-react';
 import { WebFileProcessor } from '../crypto/fileProcessor';
 import { SecretSharingConfig, EncryptionScheme } from '../crypto/types';
 import { useI18n } from '../i18n/index';
@@ -81,14 +88,22 @@ export const FileEncryption: React.FC = () => {
     try {
       const config: SecretSharingConfig = {
         threshold,
-        totalShares
+        totalShares,
       };
 
       if (scheme === 'hybrid') {
-        const result = await processor.splitFile(file, config, usePassword ? password : undefined);
+        const result = await processor.splitFile(
+          file,
+          config,
+          usePassword ? password : undefined
+        );
         setResult({ ...result, scheme: 'hybrid' } as HybridResult);
       } else {
-        const result = await processor.splitFilePureShamir(file, config, usePassword ? password : undefined);
+        const result = await processor.splitFilePureShamir(
+          file,
+          config,
+          usePassword ? password : undefined
+        );
         setResult({ ...result, scheme: 'pure-shamir' } as PureShamirResult);
       }
     } catch (err) {
@@ -111,12 +126,18 @@ export const FileEncryption: React.FC = () => {
   const downloadShareFiles = () => {
     if (result) {
       if (result.scheme === 'hybrid') {
-        const shareFiles = processor.generateShareFiles(result.shares, result.metadata);
+        const shareFiles = processor.generateShareFiles(
+          result.shares,
+          result.metadata
+        );
         shareFiles.forEach((shareFile, index) => {
           processor.downloadJson(shareFile, `hybrid_share_${index + 1}.json`);
         });
       } else {
-        const shareFiles = processor.generatePureShamirShareFiles(result.shares, result.metadata);
+        const shareFiles = processor.generatePureShamirShareFiles(
+          result.shares,
+          result.metadata
+        );
         shareFiles.forEach((shareFile, index) => {
           processor.downloadJson(shareFile, `pure_share_${index + 1}.json`);
         });
@@ -134,8 +155,10 @@ export const FileEncryption: React.FC = () => {
   return (
     <div className="mx-auto max-w-2xl">
       <div className="p-6 bg-white rounded-lg">
-        <h2 className="mb-6 text-2xl font-bold text-gray-800">{t.fileEncryptionAndSplitting}</h2>
-        
+        <h2 className="mb-6 text-2xl font-bold text-gray-800">
+          {t.fileEncryptionAndSplitting}
+        </h2>
+
         {/* File Upload */}
         <div className="mb-6">
           <label className="block mb-2 text-sm font-medium text-gray-700">
@@ -173,10 +196,10 @@ export const FileEncryption: React.FC = () => {
             {t.encryptionScheme}
           </h3>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div 
+            <div
               className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                scheme === 'hybrid' 
-                  ? 'border-indigo-500 bg-indigo-50' 
+                scheme === 'hybrid'
+                  ? 'border-indigo-500 bg-indigo-50'
                   : 'border-gray-300 hover:border-gray-400'
               }`}
               onClick={() => setScheme('hybrid')}
@@ -190,7 +213,9 @@ export const FileEncryption: React.FC = () => {
                   onChange={() => setScheme('hybrid')}
                   className="mr-2"
                 />
-                <span className="font-medium text-gray-800">{t.hybridSchemeRecommended}</span>
+                <span className="font-medium text-gray-800">
+                  {t.hybridSchemeRecommended}
+                </span>
               </div>
               <div className="text-sm text-gray-600">
                 <p>{t.hybridSchemeDesc1}</p>
@@ -198,11 +223,11 @@ export const FileEncryption: React.FC = () => {
                 <p>{t.hybridSchemeDesc3}</p>
               </div>
             </div>
-            
-            <div 
+
+            <div
               className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                scheme === 'pure-shamir' 
-                  ? 'border-indigo-500 bg-indigo-50' 
+                scheme === 'pure-shamir'
+                  ? 'border-indigo-500 bg-indigo-50'
                   : 'border-gray-300 hover:border-gray-400'
               }`}
               onClick={() => setScheme('pure-shamir')}
@@ -216,7 +241,9 @@ export const FileEncryption: React.FC = () => {
                   onChange={() => setScheme('pure-shamir')}
                   className="mr-2"
                 />
-                <span className="font-medium text-gray-800">{t.pureShamirScheme}</span>
+                <span className="font-medium text-gray-800">
+                  {t.pureShamirScheme}
+                </span>
               </div>
               <div className="text-sm text-gray-600">
                 <p>{t.pureShamirSchemeDesc1}</p>
@@ -243,7 +270,7 @@ export const FileEncryption: React.FC = () => {
                 min="2"
                 max="10"
                 value={totalShares}
-                onChange={(e) => setTotalShares(parseInt(e.target.value))}
+                onChange={e => setTotalShares(parseInt(e.target.value))}
                 className="px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
@@ -256,7 +283,7 @@ export const FileEncryption: React.FC = () => {
                 min="2"
                 max={totalShares}
                 value={threshold}
-                onChange={(e) => setThreshold(parseInt(e.target.value))}
+                onChange={e => setThreshold(parseInt(e.target.value))}
                 className="px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
@@ -268,19 +295,22 @@ export const FileEncryption: React.FC = () => {
 
         {/* Password Configuration */}
         <div className="mb-6">
-            <div className="flex items-center mb-4">
-              <input
-                type="checkbox"
-                id="usePassword"
-                checked={usePassword}
-                onChange={(e) => setUsePassword(e.target.checked)}
-                className="mr-2"
-              />
-              <label htmlFor="usePassword" className="text-sm font-medium text-gray-700">
-                {t.usePasswordProtectionRecommended}
-              </label>
-            </div>
-          
+          <div className="flex items-center mb-4">
+            <input
+              type="checkbox"
+              id="usePassword"
+              checked={usePassword}
+              onChange={e => setUsePassword(e.target.checked)}
+              className="mr-2"
+            />
+            <label
+              htmlFor="usePassword"
+              className="text-sm font-medium text-gray-700"
+            >
+              {t.usePasswordProtectionRecommended}
+            </label>
+          </div>
+
           {usePassword && (
             <div className="p-4 space-y-4 bg-gray-50 rounded-md">
               <div>
@@ -290,7 +320,7 @@ export const FileEncryption: React.FC = () => {
                 <input
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   className="px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder={t.passwordPlaceholder}
                 />
@@ -302,7 +332,7 @@ export const FileEncryption: React.FC = () => {
                 <input
                   type="password"
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={e => setConfirmPassword(e.target.value)}
                   className="px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder={t.confirmPasswordPlaceholder}
                 />
@@ -314,7 +344,7 @@ export const FileEncryption: React.FC = () => {
               </div>
             </div>
           )}
-          
+
           {!usePassword && (
             <div className="p-4 text-sm text-gray-600 bg-yellow-50 rounded-md">
               <p>{t.noPasswordNote1}</p>
@@ -331,11 +361,17 @@ export const FileEncryption: React.FC = () => {
               <div className="flex items-start">
                 <Info className="w-4 h-4 text-blue-500 mr-2 mt-0.5" />
                 <div>
-                  <p className="mb-1 font-medium text-blue-700">{t.pureShamirInfo}</p>
+                  <p className="mb-1 font-medium text-blue-700">
+                    {t.pureShamirInfo}
+                  </p>
                   <p>{t.pureShamirInfoDesc1}</p>
                   <p>{t.pureShamirInfoDesc2}</p>
                   <p>{t.pureShamirInfoDesc3}</p>
-                  <p>{formatMessage('pureShamirInfoDesc4', { usePassword: usePassword ? '和密码' : '' })}</p>
+                  <p>
+                    {formatMessage('pureShamirInfoDesc4', {
+                      usePassword: usePassword ? '和密码' : '',
+                    })}
+                  </p>
                 </div>
               </div>
             </div>
@@ -369,20 +405,32 @@ export const FileEncryption: React.FC = () => {
             <div className="flex items-center mb-3">
               <CheckCircle className="mr-2 w-5 h-5 text-green-600" />
               <span className="font-medium text-green-800">
-                {result.scheme === 'hybrid' ? t.encryptionComplete : t.fileSplittingComplete}
+                {result.scheme === 'hybrid'
+                  ? t.encryptionComplete
+                  : t.fileSplittingComplete}
               </span>
             </div>
             <div className="mb-4 text-sm text-gray-700">
               {result.scheme === 'hybrid' ? (
                 <>
-                  <p>{formatMessage('encryptionCompleteDesc1', { totalShares })}</p>
-                  <p>{formatMessage('encryptionCompleteDesc2', { threshold })}</p>
+                  <p>
+                    {formatMessage('encryptionCompleteDesc1', { totalShares })}
+                  </p>
+                  <p>
+                    {formatMessage('encryptionCompleteDesc2', { threshold })}
+                  </p>
                   <p>{t.encryptionCompleteDesc3}</p>
                 </>
               ) : (
                 <>
-                  <p>{formatMessage('fileSplittingCompleteDesc1', { totalShares })}</p>
-                  <p>{formatMessage('fileSplittingCompleteDesc2', { threshold })}</p>
+                  <p>
+                    {formatMessage('fileSplittingCompleteDesc1', {
+                      totalShares,
+                    })}
+                  </p>
+                  <p>
+                    {formatMessage('fileSplittingCompleteDesc2', { threshold })}
+                  </p>
                   <p>{t.fileSplittingCompleteDesc3}</p>
                 </>
               )}
@@ -392,7 +440,9 @@ export const FileEncryption: React.FC = () => {
                     {t.viewFileFingerprint}
                   </summary>
                   <div className="p-3 mt-2 bg-gray-50 rounded-md">
-                    <p className="mb-1 font-medium text-gray-800">{t.fileSHA256Fingerprint}</p>
+                    <p className="mb-1 font-medium text-gray-800">
+                      {t.fileSHA256Fingerprint}
+                    </p>
                     <p className="p-2 font-mono text-xs text-gray-600 break-all bg-white rounded">
                       {result.metadata.originalSHA256}
                     </p>
@@ -433,4 +483,4 @@ export const FileEncryption: React.FC = () => {
       </div>
     </div>
   );
-}; 
+};

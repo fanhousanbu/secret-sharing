@@ -1,7 +1,10 @@
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 function PwaUpdateNotification() {
-  const { needRefresh: [needRefresh], updateServiceWorker } = useRegisterSW({
+  const {
+    needRefresh: [needRefresh],
+    updateServiceWorker,
+  } = useRegisterSW({
     onRegistered(r) {
       console.log(`SW Registered: ${r}`);
     },

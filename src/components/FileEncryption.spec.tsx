@@ -8,17 +8,17 @@ jest.mock('../crypto/fileProcessor', () => ({
     splitFile: jest.fn().mockResolvedValue({
       shares: [],
       metadata: { originalSHA256: 'test-hash' },
-      encryptedData: new ArrayBuffer(0)
+      encryptedData: new ArrayBuffer(0),
     }),
     splitFilePureShamir: jest.fn().mockResolvedValue({
       shares: [],
-      metadata: { originalSHA256: 'test-hash' }
+      metadata: { originalSHA256: 'test-hash' },
     }),
     downloadFile: jest.fn(),
     downloadJson: jest.fn(),
     generateShareFiles: jest.fn().mockReturnValue([]),
-    generatePureShamirShareFiles: jest.fn().mockReturnValue([])
-  }))
+    generatePureShamirShareFiles: jest.fn().mockReturnValue([]),
+  })),
 }));
 
 jest.mock('../i18n', () => ({
@@ -126,7 +126,7 @@ describe('FileEncryption Component', () => {
     render(<FileEncryption />);
     const passwordCheckbox = screen.getByRole('checkbox');
     fireEvent.click(passwordCheckbox);
-    
+
     // 检查密码输入框是否存在
     const passwordInputs = document.querySelectorAll('input[type="password"]');
     expect(passwordInputs.length).toBeGreaterThan(0);
@@ -151,7 +151,7 @@ describe('FileEncryption Component', () => {
     render(<FileEncryption />);
     const pureShamirRadio = screen.getByDisplayValue('pure-shamir');
     fireEvent.click(pureShamirRadio);
-    
+
     // 检查信息区域是否存在
     const infoArea = document.querySelector('.bg-blue-50');
     expect(infoArea).toBeInTheDocument();
@@ -179,10 +179,12 @@ describe('FileEncryption Component', () => {
   test('should handle file input change', async () => {
     render(<FileEncryption />);
     const file = new File(['test content'], 'test.txt', { type: 'text/plain' });
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-    
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
+
     fireEvent.change(fileInput, { target: { files: [file] } });
-    
+
     await waitFor(() => {
       expect(screen.getByText('test.txt')).toBeInTheDocument();
     });
@@ -191,10 +193,12 @@ describe('FileEncryption Component', () => {
   test('should show file size when file is selected', async () => {
     render(<FileEncryption />);
     const file = new File(['test content'], 'test.txt', { type: 'text/plain' });
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-    
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
+
     fireEvent.change(fileInput, { target: { files: [file] } });
-    
+
     await waitFor(() => {
       // 检查文件信息是否显示
       expect(screen.getByText('test.txt')).toBeInTheDocument();
@@ -205,11 +209,11 @@ describe('FileEncryption Component', () => {
     render(<FileEncryption />);
     const thresholdInput = screen.getByDisplayValue('3');
     const totalSharesInput = screen.getByDisplayValue('5');
-    
+
     // Test min value
     fireEvent.change(thresholdInput, { target: { value: '1' } });
     expect(thresholdInput).toHaveAttribute('min', '2');
-    
+
     // Test max value
     fireEvent.change(totalSharesInput, { target: { value: '3' } });
     expect(thresholdInput).toHaveAttribute('max', '3');
@@ -219,7 +223,7 @@ describe('FileEncryption Component', () => {
     render(<FileEncryption />);
     const passwordCheckbox = screen.getByRole('checkbox');
     fireEvent.click(passwordCheckbox);
-    
+
     // 检查密码输入区域是否存在（当密码启用时）
     const passwordInputs = document.querySelectorAll('input[type="password"]');
     expect(passwordInputs.length).toBeGreaterThan(0);
@@ -236,13 +240,13 @@ describe('FileEncryption Component', () => {
     render(<FileEncryption />);
     const buttons = screen.getAllByRole('button');
     const checkboxes = screen.getAllByRole('checkbox');
-    
+
     buttons.forEach(button => {
       expect(button).toBeInTheDocument();
     });
-    
+
     checkboxes.forEach(checkbox => {
       expect(checkbox).toBeInTheDocument();
     });
   });
-}); 
+});

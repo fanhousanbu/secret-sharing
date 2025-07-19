@@ -4,7 +4,7 @@ export interface TranslationKey {
   // App component
   appTitle: string;
   appSubtitle: string;
-  
+
   // Features
   featureSecureEncryption: string;
   featureSecureEncryptionDesc: string;
@@ -12,16 +12,16 @@ export interface TranslationKey {
   featureSmartSplittingDesc: string;
   featureFlexibleRecovery: string;
   featureFlexibleRecoveryDesc: string;
-  
+
   // Tabs
   tabEncryption: string;
   tabRecovery: string;
-  
+
   // Footer
   footerOpenSource: string;
   footerTechStack: string;
   footerDescription: string;
-  
+
   // Common
   selectFile: string;
   fileName: string;
@@ -37,7 +37,7 @@ export interface TranslationKey {
   required: string;
   selectOrDrag: string;
   multipleSelection: string;
-  
+
   // File Encryption
   fileEncryption: string;
   fileEncryptionAndSplitting: string;
@@ -87,7 +87,7 @@ export interface TranslationKey {
   downloadEncryptedFile: string;
   downloadShareFiles: string;
   downloadAll: string;
-  
+
   // File Recovery
   fileRecovery: string;
   selectEncryptedFile: string;
@@ -126,7 +126,7 @@ export interface TranslationKey {
   sha256VerificationFail: string;
   downloadRecoveredFile: string;
   downloadHashRecord: string;
-  
+
   // Errors
   errorSelectFile: string;
   errorThresholdTooHigh: string;
@@ -139,8 +139,8 @@ export interface TranslationKey {
   errorAtLeastTwoShares: string;
   errorPasswordNeeded: string;
   errorRecoveryFailed: string;
-  }
+}
 
 export interface Translations {
   [key: string]: TranslationKey;
-} 
+}

@@ -4,7 +4,7 @@ export const zh: TranslationKey = {
   // App component
   appTitle: '文件加密与秘密分享系统',
   appSubtitle: '基于 Shamir 秘密分享算法的安全文件分割与恢复工具',
-  
+
   // Features
   featureSecureEncryption: '安全加密',
   featureSecureEncryptionDesc: '使用 AES-256-GCM 算法对文件进行强加密保护',
@@ -12,16 +12,16 @@ export const zh: TranslationKey = {
   featureSmartSplittingDesc: '将加密密钥分割成多个份额，分散存储提高安全性',
   featureFlexibleRecovery: '灵活恢复',
   featureFlexibleRecoveryDesc: '只需要部分份额即可恢复原文件，具有良好的容错性',
-  
+
   // Tabs
   tabEncryption: '文件加密',
   tabRecovery: '文件恢复',
-  
+
   // Footer
   footerOpenSource: '开源项目 • 基于 TypeScript 和 React',
   footerTechStack: '基于 TypeScript 和 React',
   footerDescription: '使用 Shamir 秘密分享算法实现安全的文件分割与恢复',
-  
+
   // Common
   selectFile: '选择文件',
   fileName: '文件名',
@@ -37,7 +37,7 @@ export const zh: TranslationKey = {
   required: '必需',
   selectOrDrag: '点击选择文件或拖拽文件到此处',
   multipleSelection: '选择份额文件 (.json) - 可以选择多个',
-  
+
   // File Encryption
   fileEncryption: '文件加密',
   fileEncryptionAndSplitting: '文件加密与分割',
@@ -54,7 +54,8 @@ export const zh: TranslationKey = {
   splittingConfig: '分割配置',
   totalShares: '总份额数 (n)',
   threshold: '阈值 (m)',
-  shareDescription: '文件将被分成 {totalShares} 份，需要任意 {threshold} 份即可恢复',
+  shareDescription:
+    '文件将被分成 {totalShares} 份，需要任意 {threshold} 份即可恢复',
   usePasswordProtection: '使用密码保护',
   usePasswordProtectionRecommended: '使用密码保护（推荐）',
   encryptionPassword: '加密密码',
@@ -87,7 +88,7 @@ export const zh: TranslationKey = {
   downloadEncryptedFile: '下载加密文件',
   downloadShareFiles: '下载份额文件',
   downloadAll: '下载全部',
-  
+
   // File Recovery
   fileRecovery: '文件恢复',
   selectEncryptedFile: '选择加密文件',
@@ -96,9 +97,11 @@ export const zh: TranslationKey = {
   detectedSchemeHybrid: '混合方案',
   detectedSchemePureShamir: '纯Shamir方案',
   hybridSchemeRecoveryDesc: '需要加密文件和足够的份额文件来恢复原始文件',
-  pureShamirRecoveryDesc: '只需要足够的份额文件{needsPassword}即可恢复原始文件，无需加密文件',
+  pureShamirRecoveryDesc:
+    '只需要足够的份额文件{needsPassword}即可恢复原始文件，无需加密文件',
   selectShareFiles: '选择份额文件',
-  pureShamirUploadNote: '纯Shamir方案需要上传足够数量的份额文件（通常是阈值数量）',
+  pureShamirUploadNote:
+    '纯Shamir方案需要上传足够数量的份额文件（通常是阈值数量）',
   selectedShareFiles: '已选择的份额文件：',
   filesCount: '{count} 个文件',
   pureShamirTip: '💡 提示：纯Shamir方案通常需要上传与阈值数量相同的份额文件',
@@ -118,7 +121,8 @@ export const zh: TranslationKey = {
   recoveryCompleteDesc4: '• 使用了加密文件: {encryptedFile}',
   recoveryCompleteDesc5: '• 恢复方案: {scheme}',
   verifyFileIntegrity: '💡 验证文件完整性',
-  fileRecoveredNote: '文件已成功恢复。如果你有原始文件的SHA256值，可以在上方手动验证文件完整性。',
+  fileRecoveredNote:
+    '文件已成功恢复。如果你有原始文件的SHA256值，可以在上方手动验证文件完整性。',
   recoveredFileSHA256: '恢复后文件SHA256：',
   verifySHA256Optional: '验证SHA256（可选）：',
   sha256Placeholder: '输入期望的SHA256值进行验证...',
@@ -126,7 +130,7 @@ export const zh: TranslationKey = {
   sha256VerificationFail: '❌ SHA256验证失败：文件可能已损坏或被篡改',
   downloadRecoveredFile: '下载恢复的文件',
   downloadHashRecord: '下载哈希记录',
-  
+
   // Errors
   errorSelectFile: '请选择要加密的文件',
   errorThresholdTooHigh: '阈值不能大于总份额数',
@@ -139,4 +143,4 @@ export const zh: TranslationKey = {
   errorAtLeastTwoShares: '至少需要2个份额文件',
   errorPasswordNeeded: '此文件需要密码，请输入密码',
   errorRecoveryFailed: '恢复过程中发生错误',
-  }; 
+};

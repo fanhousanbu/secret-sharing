@@ -36,4 +36,4 @@ export const LanguageSwitcher: React.FC = () => {
       </div>
     </div>
   );
-}; 
+};

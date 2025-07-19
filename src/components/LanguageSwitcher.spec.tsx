@@ -150,10 +150,10 @@ describe('LanguageSwitcher Component', () => {
     render(<LanguageSwitcher />);
     const enButton = screen.getByText('EN');
     const zhButton = screen.getByText('中文');
-    
+
     fireEvent.click(enButton);
     expect(mockSetLanguage).toHaveBeenCalledWith('en');
-    
+
     fireEvent.click(zhButton);
     expect(mockSetLanguage).toHaveBeenCalledWith('zh');
   });
@@ -182,11 +182,11 @@ describe('LanguageSwitcher Component', () => {
   test('should handle multiple clicks', () => {
     render(<LanguageSwitcher />);
     const enButton = screen.getByText('EN');
-    
+
     fireEvent.click(enButton);
     fireEvent.click(enButton);
     fireEvent.click(enButton);
-    
+
     expect(mockSetLanguage).toHaveBeenCalledTimes(3);
     expect(mockSetLanguage).toHaveBeenCalledWith('en');
   });
@@ -202,4 +202,4 @@ describe('LanguageSwitcher Component', () => {
     const buttonContainer = screen.getByText('EN').closest('div');
     expect(buttonContainer).toHaveClass('space-x-1');
   });
-}); 
+});
