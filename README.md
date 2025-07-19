@@ -1,8 +1,8 @@
 # File Encryption & Secret Sharing System
 
-[![Test Coverage](https://img.shields.io/badge/coverage-69.54%25-brightgreen)](https://github.com/your-username/secret-sharing)
-[![Build Status](https://github.com/your-username/secret-sharing/workflows/Test%20and%20Coverage/badge.svg)](https://github.com/your-username/secret-sharing/actions)
-[![Deploy Status](https://github.com/your-username/secret-sharing/workflows/Deploy%20to%20GitHub%20Pages/badge.svg)](https://your-username.github.io/secret-sharing)
+[![Test Coverage](https://img.shields.io/badge/coverage-69.54%25-brightgreen)](https://github.com/fanhousanbu/secret-sharing)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/fanhousanbu/secret-sharing/actions)
+[![Deploy Status](https://img.shields.io/badge/deploy-success-brightgreen)](https://fanhousanbu.github.io/secret-sharing)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18.2-blue)](https://reactjs.org/)
