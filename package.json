@@ -1,7 +1,7 @@
 {
   "name": "file-encryption-web",
   "version": "1.0.0",
-  "description": "文件加密和秘密分享系统 - Web版本",
+  "description": "A secure, client-side file encryption and secret sharing tool using the Web Crypto API. No data is ever sent to a server.",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
