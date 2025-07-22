@@ -2,23 +2,31 @@ import { useState, useEffect } from 'react';
 import { FileEncryption } from './components/FileEncryption';
 import { FileRecovery } from './components/FileRecovery';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
-import PwaUpdateNotification from './components/PwaUpdateNotification'; // Import the new component
-import { Shield, FileText, Settings, Github } from 'lucide-react';
+import PwaUpdateNotification from './components/PwaUpdateNotification';
+import { Shield, FileText, Github, Wallet } from 'lucide-react';
 import { useI18n } from './i18n/index';
+import { WalletSetup } from './components/WalletSetup';
+import { WalletDashboard } from './components/WalletDashboard';
+import { getWallet } from './crypto/walletManager';
 
-type Tab = 'encrypt' | 'decrypt';
+type Tab = 'files' | 'wallet';
 
 function App() {
-  const [activeTab, setActiveTab] = useState<Tab>('encrypt');
+  const [activeTab, setActiveTab] = useState<Tab>('files');
+  const [isWalletUnlocked, setIsWalletUnlocked] = useState(!!getWallet());
   const { t } = useI18n();
 
   useEffect(() => {
     document.title = t.appTitle;
   }, [t]);
 
+  const handleLock = () => {
+    setIsWalletUnlocked(false);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <PwaUpdateNotification /> {/* Add the component here */}
+      <PwaUpdateNotification />
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="relative text-center mb-8">
@@ -32,67 +40,45 @@ function App() {
           <p className="text-gray-600 text-lg">{t.appSubtitle}</p>
         </div>
 
-        {/* Features */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg p-6 shadow-md">
-            <Shield className="w-8 h-8 text-green-600 mb-3" />
-            <h3 className="font-semibold text-gray-800 mb-2">
-              {t.featureSecureEncryption}
-            </h3>
-            <p className="text-gray-600 text-sm">
-              {t.featureSecureEncryptionDesc}
-            </p>
-          </div>
-          <div className="bg-white rounded-lg p-6 shadow-md">
-            <FileText className="w-8 h-8 text-blue-600 mb-3" />
-            <h3 className="font-semibold text-gray-800 mb-2">
-              {t.featureSmartSplitting}
-            </h3>
-            <p className="text-gray-600 text-sm">
-              {t.featureSmartSplittingDesc}
-            </p>
-          </div>
-          <div className="bg-white rounded-lg p-6 shadow-md">
-            <Settings className="w-8 h-8 text-purple-600 mb-3" />
-            <h3 className="font-semibold text-gray-800 mb-2">
-              {t.featureFlexibleRecovery}
-            </h3>
-            <p className="text-gray-600 text-sm">
-              {t.featureFlexibleRecoveryDesc}
-            </p>
-          </div>
-        </div>
-
         {/* Tab Navigation */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="flex border-b">
             <button
-              onClick={() => setActiveTab('encrypt')}
+              onClick={() => setActiveTab('files')}
               className={`flex-1 py-4 px-6 text-center font-medium transition-colors ${
-                activeTab === 'encrypt'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-              }`}
-            >
-              <Shield className="w-5 h-5 inline mr-2" />
-              {t.tabEncryption}
-            </button>
-            <button
-              onClick={() => setActiveTab('decrypt')}
-              className={`flex-1 py-4 px-6 text-center font-medium transition-colors ${
-                activeTab === 'decrypt'
+                activeTab === 'files'
                   ? 'bg-indigo-600 text-white'
                   : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
               }`}
             >
               <FileText className="w-5 h-5 inline mr-2" />
-              {t.tabRecovery}
+              Files
+            </button>
+            <button
+              onClick={() => setActiveTab('wallet')}
+              className={`flex-1 py-4 px-6 text-center font-medium transition-colors ${
+                activeTab === 'wallet'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <Wallet className="w-5 h-5 inline mr-2" />
+              Wallet
             </button>
           </div>
 
           {/* Tab Content */}
           <div className="p-6">
-            {activeTab === 'encrypt' ? <FileEncryption /> : <FileRecovery />}
+            {activeTab === 'files' ? (
+              <>
+                <FileEncryption />
+                <FileRecovery />
+              </>
+            ) : isWalletUnlocked ? (
+              <WalletDashboard onLock={handleLock} />
+            ) : (
+              <WalletSetup />
+            )}
           </div>
         </div>
 

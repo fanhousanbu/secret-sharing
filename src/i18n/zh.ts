@@ -4,6 +4,7 @@ export const zh: TranslationKey = {
   // App component
   appTitle: '文件加密与秘密分享系统',
   appSubtitle: '基于 Shamir 秘密分享算法的安全文件分割与恢复工具',
+  welcomeMessage: '欢迎使用秘密分享应用！',
 
   // Features
   featureSecureEncryption: '安全加密',

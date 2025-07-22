@@ -4,6 +4,7 @@ export interface TranslationKey {
   // App component
   appTitle: string;
   appSubtitle: string;
+  welcomeMessage: string;
 
   // Features
   featureSecureEncryption: string;
