@@ -5,6 +5,7 @@ export const en: TranslationKey = {
   appTitle: 'File Encryption & Secret Sharing System',
   appSubtitle:
     'Secure file splitting and recovery tool based on Shamir secret sharing algorithm',
+  welcomeMessage: 'Welcome to the Secret Sharing App!',
 
   // Features
   featureSecureEncryption: 'Secure Encryption',

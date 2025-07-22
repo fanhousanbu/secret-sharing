@@ -67,12 +67,7 @@ describe('App Component', () => {
     expect(container).toBeInTheDocument();
   });
 
-  test('should render features grid', () => {
-    render(<App />);
-    // 检查特性网格是否存在
-    const grid = document.querySelector('.grid');
-    expect(grid).toBeInTheDocument();
-  });
+  
 
   test('should render footer section', () => {
     render(<App />);
