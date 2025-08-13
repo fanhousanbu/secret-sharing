@@ -146,7 +146,8 @@ describe('Shamir Secret Sharing', () => {
     });
 
     test('应该处理接近素数边界的值', () => {
-      const prime = 2n ** 521n - 1n;
+      // 使用新的安全质数进行测试
+      const prime = 2n ** 256n - 2n ** 224n + 2n ** 192n + 2n ** 96n - 1n;
       const secret = prime - 1n; // 接近素数的值
       const config = { threshold: 2, totalShares: 3 };
 
@@ -180,7 +181,7 @@ describe('Shamir Secret Sharing', () => {
       shares.forEach(share => {
         expect(share.value).toBeGreaterThanOrEqual(0n);
         // 份额值应该小于素数
-        expect(share.value).toBeLessThan(2n ** 521n);
+        expect(share.value).toBeLessThan(2n ** 256n);
       });
     });
 
