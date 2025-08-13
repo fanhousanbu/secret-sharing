@@ -41,28 +41,28 @@ describe('FileEncryption Component', () => {
 
   test('should render file upload section', () => {
     render(<FileEncryption />);
-    // 检查文件上传区域是否存在
+    // Check if file upload area exists
     const fileInput = document.querySelector('input[type="file"]');
     expect(fileInput).toBeInTheDocument();
   });
 
   test('should render scheme selection', () => {
     render(<FileEncryption />);
-    // 检查方案选择区域是否存在
+    // Check if scheme selection area exists
     const radioButtons = screen.getAllByRole('radio');
     expect(radioButtons.length).toBe(2);
   });
 
   test('should render configuration section', () => {
     render(<FileEncryption />);
-    // 检查配置区域是否存在
+    // Check if configuration area exists
     const numberInputs = screen.getAllByRole('spinbutton');
     expect(numberInputs.length).toBe(2);
   });
 
   test('should render password configuration', () => {
     render(<FileEncryption />);
-    // 检查密码配置区域是否存在
+    // Check if password configuration area exists
     const passwordCheckbox = screen.getByRole('checkbox');
     expect(passwordCheckbox).toBeInTheDocument();
   });
@@ -77,7 +77,7 @@ describe('FileEncryption Component', () => {
 
   test('should handle file selection', () => {
     render(<FileEncryption />);
-    // 检查文件选择按钮是否存在
+    // Check if file selection button exists
     const buttons = screen.getAllByRole('button');
     expect(buttons.length).toBeGreaterThan(0);
   });
@@ -127,21 +127,21 @@ describe('FileEncryption Component', () => {
     const passwordCheckbox = screen.getByRole('checkbox');
     fireEvent.click(passwordCheckbox);
 
-    // 检查密码输入框是否存在
+    // Check if password input fields exist
     const passwordInputs = document.querySelectorAll('input[type="password"]');
     expect(passwordInputs.length).toBeGreaterThan(0);
   });
 
   test('should render encryption button', () => {
     render(<FileEncryption />);
-    // 检查加密按钮是否存在
+    // Check if encryption button exists
     const buttons = screen.getAllByRole('button');
     expect(buttons.length).toBeGreaterThan(0);
   });
 
   test('should disable encryption button when no file is selected', () => {
     render(<FileEncryption />);
-    // 检查主按钮是否被禁用
+    // Check if main button is disabled
     const buttons = screen.getAllByRole('button');
     const mainButton = buttons[buttons.length - 1];
     expect(mainButton).toBeDisabled();
@@ -152,7 +152,7 @@ describe('FileEncryption Component', () => {
     const pureShamirRadio = screen.getByDisplayValue('pure-shamir');
     fireEvent.click(pureShamirRadio);
 
-    // 检查信息区域是否存在
+    // Check if info area exists
     const infoArea = document.querySelector('.bg-blue-50');
     expect(infoArea).toBeInTheDocument();
   });
@@ -165,7 +165,7 @@ describe('FileEncryption Component', () => {
 
   test('should have proper styling classes', () => {
     render(<FileEncryption />);
-    // 检查容器是否有正确的样式类
+    // Check if container has correct styling classes
     const container = document.querySelector('.mx-auto');
     expect(container).toBeInTheDocument();
   });
@@ -200,7 +200,7 @@ describe('FileEncryption Component', () => {
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
-      // 检查文件信息是否显示
+      // Check if file information is displayed
       expect(screen.getByText('test.txt')).toBeInTheDocument();
     });
   });
@@ -224,14 +224,14 @@ describe('FileEncryption Component', () => {
     const passwordCheckbox = screen.getByRole('checkbox');
     fireEvent.click(passwordCheckbox);
 
-    // 检查密码输入区域是否存在（当密码启用时）
+    // Check if password input area exists (when password is enabled)
     const passwordInputs = document.querySelectorAll('input[type="password"]');
     expect(passwordInputs.length).toBeGreaterThan(0);
   });
 
   test('should render no password warning', () => {
     render(<FileEncryption />);
-    // 检查无密码警告区域是否存在（当密码未启用时）
+    // Check if no password warning area exists (when password is not enabled)
     const warningArea = document.querySelector('.bg-yellow-50');
     expect(warningArea).toBeInTheDocument();
   });

@@ -1,14 +1,14 @@
 import { Share, SecretSharingConfig } from './types';
 
-// 生成安全的质数用于有限域运算
+// Generate secure prime for finite field operations
 function generateSecurePrime(): bigint {
-  // 使用更大的质数，至少256位以确保安全性
-  // 这里使用一个已知的安全质数：2^256 - 2^224 + 2^192 + 2^96 - 1
-  // 这是NIST P-256椭圆曲线使用的质数，经过广泛验证
+  // Use a larger prime, at least 256 bits for security
+  // Here we use a known secure prime: 2^256 - 2^224 + 2^192 + 2^96 - 1
+  // This is the prime used by NIST P-256 elliptic curve, widely validated
   return 2n ** 256n - 2n ** 224n + 2n ** 192n + 2n ** 96n - 1n;
 }
 
-// 动态生成质数，每次调用都生成新的安全质数
+// Dynamic prime generation, generates new secure prime on each call
 let currentPrime: bigint | null = null;
 
 function getSecurePrime(): bigint {
@@ -21,14 +21,14 @@ function getSecurePrime(): bigint {
 
 
 /**
- * 计算模运算
+ * Calculate modular arithmetic
  */
 function mod(a: bigint, m: bigint): bigint {
   return ((a % m) + m) % m;
 }
 
 /**
- * 计算模逆元 (使用扩展欧几里得算法)
+ * Calculate modular inverse (using extended Euclidean algorithm)
  */
 function modInverse(a: bigint, m: bigint): bigint {
   if (a < 0n) a = mod(a, m);
@@ -46,7 +46,7 @@ function modInverse(a: bigint, m: bigint): bigint {
 }
 
 /**
- * 计算拉格朗日插值
+ * Calculate Lagrange interpolation
  */
 function lagrangeInterpolation(shares: Share[]): bigint {
   let result = 0n;
@@ -76,13 +76,13 @@ function lagrangeInterpolation(shares: Share[]): bigint {
 }
 
 /**
- * 生成随机多项式系数
+ * Generate random polynomial coefficients
  */
 function generateCoefficients(threshold: number, secret: bigint): bigint[] {
   const coefficients = [secret];
 
   for (let i = 1; i < threshold; i++) {
-    // 使用Web Crypto API生成随机数
+    // Use Web Crypto API to generate random numbers
     const randomBytes = crypto.getRandomValues(new Uint8Array(32));
     let coeff = 0n;
     for (let j = 0; j < randomBytes.length; j++) {
@@ -96,7 +96,7 @@ function generateCoefficients(threshold: number, secret: bigint): bigint[] {
 }
 
 /**
- * 计算多项式在给定点的值
+ * Calculate polynomial value at given point
  */
 function evaluatePolynomial(coefficients: bigint[], x: number): bigint {
   let result = 0n;
@@ -111,7 +111,7 @@ function evaluatePolynomial(coefficients: bigint[], x: number): bigint {
 }
 
 /**
- * 将秘密分割为多个份额
+ * Split secret into multiple shares
  */
 export function splitSecret(
   secret: bigint,
@@ -120,17 +120,17 @@ export function splitSecret(
   const { threshold, totalShares } = config;
 
   if (threshold > totalShares) {
-    throw new Error('阈值不能大于总份额数');
+    throw new Error('Threshold cannot be greater than total shares');
   }
 
   if (threshold < 2) {
-    throw new Error('阈值必须至少为2');
+    throw new Error('Threshold must be at least 2');
   }
 
-  // 生成多项式系数
+  // Generate polynomial coefficients
   const coefficients = generateCoefficients(threshold, secret);
 
-  // 生成份额
+  // Generate shares
   const shares: Share[] = [];
   for (let i = 1; i <= totalShares; i++) {
     const value = evaluatePolynomial(coefficients, i);
@@ -141,16 +141,16 @@ export function splitSecret(
 }
 
 /**
- * 从份额中恢复秘密
+ * Recover secret from shares
  */
 export function recoverSecret(shares: Share[], threshold: number): bigint {
   if (shares.length < threshold) {
-    throw new Error(`需要至少${threshold}个份额才能恢复秘密`);
+    throw new Error(`Need at least ${threshold} shares to recover secret`);
   }
 
-  // 只使用前threshold个份额
+  // Only use the first threshold shares
   const usedShares = shares.slice(0, threshold);
 
-  // 使用拉格朗日插值恢复秘密
+  // Use Lagrange interpolation to recover secret
   return lagrangeInterpolation(usedShares);
 }

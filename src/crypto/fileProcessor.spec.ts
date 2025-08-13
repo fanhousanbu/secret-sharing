@@ -1,7 +1,7 @@
 import { WebFileProcessor } from './fileProcessor';
 import { SecretSharingConfig, PureShamirRecoveryOptions } from './types';
 
-// 模拟webCrypto模块
+// Mock webCrypto module
 jest.mock('./webCrypto', () => ({
   encryptData: jest.fn(),
   decryptData: jest.fn(),
@@ -14,13 +14,13 @@ jest.mock('./webCrypto', () => ({
   calculateFileSHA256: jest.fn(),
 }));
 
-// 模拟shamir模块
+// Mock shamir module
 jest.mock('./shamir', () => ({
   splitSecret: jest.fn(),
   recoverSecret: jest.fn(),
 }));
 
-// 模拟File API
+// Mock File API
 global.File = class File {
   name: string;
   size: number;
@@ -35,15 +35,15 @@ global.File = class File {
   }
 
   async arrayBuffer(): Promise<ArrayBuffer> {
-    return new ArrayBuffer(64); // 返回64字节的测试数据
+    return new ArrayBuffer(64); // Return 64-byte test data
   }
 } as any;
 
-// 模拟URL.createObjectURL和URL.revokeObjectURL
+// Mock URL.createObjectURL and URL.revokeObjectURL
 global.URL.createObjectURL = jest.fn();
 global.URL.revokeObjectURL = jest.fn();
 
-// 模拟document.createElement
+// Mock document.createElement
 document.createElement = jest.fn(() => ({
   click: jest.fn(),
   download: '',
@@ -60,7 +60,7 @@ describe('WebFileProcessor', () => {
   beforeEach(() => {
     processor = new WebFileProcessor();
 
-    // 获取模拟函数
+    // Get mock functions
     const { encryptData, calculateSHA256 } = require('./webCrypto');
     const { splitSecret, recoverSecret } = require('./shamir');
 
@@ -69,7 +69,7 @@ describe('WebFileProcessor', () => {
     mockSplitSecret = splitSecret;
     mockRecoverSecret = recoverSecret;
 
-    // 设置默认的mock实现
+    // Set default mock implementations
     mockCalculateSHA256.mockResolvedValue('mock-sha256-hash');
     mockEncryptData.mockResolvedValue({
       encryptedData: new ArrayBuffer(64),
@@ -80,14 +80,14 @@ describe('WebFileProcessor', () => {
   });
 
   describe('splitFilePureShamir', () => {
-    test('应该能够分割文件（不使用密码）', async () => {
+    test('should be able to split file (without password)', async () => {
       const file = new File(['test content'], 'test.txt');
       const config: SecretSharingConfig = {
         threshold: 3,
         totalShares: 5,
       };
 
-      // 模拟splitSecret返回的份额
+      // Mock shares returned by splitSecret
       const mockShares = [
         { id: 1, value: 123n },
         { id: 2, value: 456n },
@@ -100,7 +100,7 @@ describe('WebFileProcessor', () => {
 
       const result = await processor.splitFilePureShamir(file, config);
 
-      expect(result.shares).toHaveLength(2); // 64字节数据分成2个32字节块
+      expect(result.shares).toHaveLength(2); // 64-byte data split into 2 32-byte chunks
       expect(result.metadata.scheme).toBe('pure-shamir');
       expect(result.metadata.threshold).toBe(3);
       expect(result.metadata.totalShares).toBe(5);
@@ -109,7 +109,7 @@ describe('WebFileProcessor', () => {
       expect(result.metadata.salt).toBeUndefined();
     });
 
-    test('应该能够分割文件（使用密码）', async () => {
+    test('should be able to split file (with password)', async () => {
       const file = new File(['test content'], 'test.txt');
       const config: SecretSharingConfig = {
         threshold: 3,
@@ -143,7 +143,7 @@ describe('WebFileProcessor', () => {
   });
 
   describe('recoverFilePureShamir', () => {
-    test('应该能够恢复文件（不使用密码）', async () => {
+    test('should be able to recover file (without password)', async () => {
       const mockShares = [
         [
           { id: 1, value: 123n, chunkIndex: 0, totalChunks: 2 },
@@ -176,10 +176,10 @@ describe('WebFileProcessor', () => {
         metadata,
       };
 
-      // 模拟recoverSecret返回恢复的数据块
+      // Mock data blocks returned by recoverSecret
       mockRecoverSecret
-        .mockReturnValueOnce(0x12345678n) // 第一个块
-        .mockReturnValueOnce(0x87654321n); // 第二个块
+        .mockReturnValueOnce(0x12345678n) // First block
+        .mockReturnValueOnce(0x87654321n); // Second block
 
       const result = await processor.recoverFilePureShamir(options);
 
@@ -188,7 +188,7 @@ describe('WebFileProcessor', () => {
       expect(result.data).toBeInstanceOf(ArrayBuffer);
     });
 
-    test('应该能够恢复文件（使用密码）', async () => {
+    test('should be able to recover file (with password)', async () => {
       const mockShares = [
         [
           { id: 1, value: 123n, chunkIndex: 0, totalChunks: 2 },
@@ -232,7 +232,7 @@ describe('WebFileProcessor', () => {
       expect(result.filename).toBe('test.txt');
     });
 
-    test('应该在缺少密码时抛出错误', async () => {
+    test('should throw error when password is missing', async () => {
       const mockShares = [[]];
       const metadata = {
         scheme: 'pure-shamir' as const,
@@ -254,11 +254,11 @@ describe('WebFileProcessor', () => {
       };
 
       await expect(processor.recoverFilePureShamir(options)).rejects.toThrow(
-        '此文件使用密码保护，请提供正确的密码'
+        'This file is password protected, please provide the correct password'
       );
     });
 
-    test('应该在份额不足时抛出错误', async () => {
+    test('should throw error when shares are insufficient', async () => {
       const mockShares = [
         [{ id: 1, value: 123n, chunkIndex: 0, totalChunks: 1 }],
       ];
@@ -283,12 +283,12 @@ describe('WebFileProcessor', () => {
       };
 
       await expect(processor.recoverFilePureShamir(options)).rejects.toThrow(
-        '份额文件不足，需要至少 3 个不同的份额文件，当前只有 1 个'
+        'Insufficient share files, need at least 3 different share files, currently only have 1'
       );
     });
   });
 
-  describe('recoverFilePureShamir 边界与异常', () => {
+  describe('recoverFilePureShamir edge cases and exceptions', () => {
     test('should throw if shares.length < metadata.totalChunks', async () => {
       const options = {
         shares: [],
@@ -307,7 +307,7 @@ describe('WebFileProcessor', () => {
         },
       };
       await expect(processor.recoverFilePureShamir(options)).rejects.toThrow(
-        '份额数据不完整'
+        'Share data incomplete'
       );
     });
 
@@ -329,7 +329,7 @@ describe('WebFileProcessor', () => {
         },
       };
       await expect(processor.recoverFilePureShamir(options)).rejects.toThrow(
-        '份额数据不完整'
+        'Share data incomplete'
       );
     });
 
@@ -351,7 +351,7 @@ describe('WebFileProcessor', () => {
         },
       };
       await expect(processor.recoverFilePureShamir(options)).rejects.toThrow(
-        '份额文件不足，需要至少 2 个不同的份额文件，当前只有 1 个'
+        'Insufficient share files, need at least 2 different share files, currently only have 1'
       );
     });
 
@@ -384,7 +384,7 @@ describe('WebFileProcessor', () => {
       });
       await expect(
         processor.recoverFilePureShamir(options, password)
-      ).rejects.toThrow('密码错误或数据损坏');
+      ).rejects.toThrow('Password error or data corruption');
     });
 
     test('should throw if combinedData.length < ivSize', async () => {
@@ -412,15 +412,15 @@ describe('WebFileProcessor', () => {
       mockRecoverSecret.mockReturnValueOnce(0x1n);
       const { decryptDataWithPassword } = require('./webCrypto');
       decryptDataWithPassword.mockImplementation(() => new ArrayBuffer(0));
-      // 移除私有方法调用，直接测试异常情况
+      // Remove private method calls, directly test exception cases
       await expect(
         processor.recoverFilePureShamir(options, password)
-      ).rejects.toThrow('密码错误或数据损坏');
+      ).rejects.toThrow('Password error or data corruption');
     });
   });
 
   describe('generatePureShamirShareFiles', () => {
-    test('应该能够生成份额文件', () => {
+    test('should be able to generate share files', () => {
       const mockShares = [
         [
           { id: 1, value: 123n, chunkIndex: 0, totalChunks: 2 },
@@ -451,7 +451,7 @@ describe('WebFileProcessor', () => {
         metadata
       );
 
-      expect(result.length).toBeGreaterThan(0); // 至少有一个份额文件
+      expect(result.length).toBeGreaterThan(0); // At least one share file
       expect(result[0]).toHaveProperty('shareId');
       expect(result[0]).toHaveProperty('shares');
       expect(result[0]).toHaveProperty('metadata');
@@ -461,7 +461,7 @@ describe('WebFileProcessor', () => {
   });
 
   describe('parsePureShamirShareFiles', () => {
-    test('应该能够解析份额文件', () => {
+    test('should be able to parse share files', () => {
       const shareFilesData = [
         JSON.stringify({
           scheme: 'pure-shamir',
@@ -487,14 +487,14 @@ describe('WebFileProcessor', () => {
 
       const result = processor.parsePureShamirShareFiles(shareFilesData);
 
-      expect(result.shares).toHaveLength(2); // 2个数据块
+      expect(result.shares).toHaveLength(2); // 2 data chunks
       expect(result.metadata).toBeDefined();
       expect(result.metadata.filename).toBe('test.txt');
     });
   });
 
   describe('detectScheme', () => {
-    test('应该能够检测方案', () => {
+    test('should be able to detect scheme', () => {
       const shareFileData = JSON.stringify({
         scheme: 'pure-shamir',
         id: 1,
@@ -508,7 +508,7 @@ describe('WebFileProcessor', () => {
       expect(result.length).toBeGreaterThan(0);
     });
 
-    test('应该能够处理不同的方案', () => {
+    test('should be able to handle different schemes', () => {
       const shareFileData = JSON.stringify({
         scheme: 'legacy',
         id: 1,
@@ -522,20 +522,20 @@ describe('WebFileProcessor', () => {
       expect(result.length).toBeGreaterThan(0);
     });
 
-    test('应该能够处理无效数据', () => {
+    test('should be able to handle invalid data', () => {
       const invalidData = 'invalid json';
 
       expect(() => {
         try {
           processor.detectScheme(invalidData);
         } catch (error) {
-          // 预期会抛出错误
+          // Expected to throw error
         }
       }).not.toThrow();
     });
   });
 
-  describe('detectScheme 分支覆盖', () => {
+  describe('detectScheme branch coverage', () => {
     test('should return scheme from metadata', () => {
       const shareFileData = JSON.stringify({
         metadata: {
@@ -613,21 +613,21 @@ describe('WebFileProcessor', () => {
   });
 
   describe('downloadFile', () => {
-    test('应该能够创建下载链接', () => {
-      // 跳过这个测试，因为它需要复杂的DOM模拟
+    test('should be able to create download link', () => {
+      // Skip this test as it requires complex DOM mocking
       expect(true).toBe(true);
     });
   });
 
   describe('downloadJson', () => {
-    test('应该能够创建JSON下载链接', () => {
-      // 跳过这个测试，因为它需要复杂的DOM模拟
+    test('should be able to create JSON download link', () => {
+      // Skip this test as it requires complex DOM mocking
       expect(true).toBe(true);
     });
   });
 
   describe('splitFile', () => {
-    test('应该能够分割文件', async () => {
+    test('should be able to split file', async () => {
       const file = new File(['test content'], 'test.txt');
       const config: SecretSharingConfig = {
         threshold: 3,
@@ -653,7 +653,7 @@ describe('WebFileProcessor', () => {
   });
 
   describe('recoverFile', () => {
-    test('应该能够恢复文件', async () => {
+    test('should be able to recover file', async () => {
       const encryptedData = new ArrayBuffer(64);
       const options = {
         shares: [
@@ -686,7 +686,7 @@ describe('WebFileProcessor', () => {
   });
 
   describe('generateShareFiles', () => {
-    test('应该能够生成份额文件', () => {
+    test('should be able to generate share files', () => {
       const shares = [
         { id: 1, value: 123n },
         { id: 2, value: 456n },
@@ -708,7 +708,7 @@ describe('WebFileProcessor', () => {
   });
 
   describe('parseShareFiles', () => {
-    test('应该能够解析份额文件', () => {
+    test('should be able to parse share files', () => {
       const shareFilesData = [
         JSON.stringify({
           scheme: 'pure-shamir',
@@ -727,13 +727,13 @@ describe('WebFileProcessor', () => {
   });
 
   describe('downloadHashRecord', () => {
-    test('应该能够下载哈希记录', () => {
-      // 跳过这个测试，因为它需要复杂的DOM模拟
+    test('should be able to download hash record', () => {
+      // Skip this test as it requires complex DOM mocking
       expect(true).toBe(true);
     });
   });
 
-  describe('splitFile & recoverFile 异常', () => {
+  describe('splitFile & recoverFile exceptions', () => {
     test('splitFile should throw if encryptData throws', async () => {
       const file = new File(['test content'], 'test.txt');
       const config: SecretSharingConfig = { threshold: 2, totalShares: 2 };
@@ -759,7 +759,7 @@ describe('WebFileProcessor', () => {
       };
       await expect(
         processor.recoverFile(encryptedData, options)
-      ).rejects.toThrow('需要至少2个份额才能恢复文件');
+              ).rejects.toThrow('Need at least 2 shares to recover file');
     });
 
     test('recoverFile should throw if usePassword but no password', async () => {
@@ -777,7 +777,7 @@ describe('WebFileProcessor', () => {
       };
       await expect(
         processor.recoverFile(encryptedData, options)
-      ).rejects.toThrow('此文件使用密码加密，请提供正确的密码');
+              ).rejects.toThrow('This file is password encrypted, please provide the correct password');
     });
 
     test('recoverFile should throw if not usePassword but password provided', async () => {
@@ -795,11 +795,11 @@ describe('WebFileProcessor', () => {
       };
       await expect(
         processor.recoverFile(encryptedData, options, '123')
-      ).rejects.toThrow('此文件未使用密码加密，无需提供密码');
+              ).rejects.toThrow('This file is not password encrypted, no password needed');
     });
   });
 
-  describe('recoverFile 分支覆盖', () => {
+  describe('recoverFile branch coverage', () => {
     test('should handle usePassword && userPassword && salt case', async () => {
       const encryptedData = new ArrayBuffer(64);
       const options = {

@@ -24,33 +24,33 @@ import {
 } from './types';
 
 /**
- * Web版本的文件处理器
+ * Web version file processor
  */
 export class WebFileProcessor {
-  // 纯Shamir方案的数据块大小（字节）
-  private static readonly CHUNK_SIZE = 32; // 32字节 = 256位
+  // Pure Shamir scheme data chunk size (bytes)
+  private static readonly CHUNK_SIZE = 32; // 32 bytes = 256 bits
 
   /**
-   * 将ArrayBuffer转换为bigint数组（按块分割）
-   */
+ * Convert ArrayBuffer to bigint array (split by chunks)
+ */
   private arrayBufferToBigIntChunks(buffer: ArrayBuffer): bigint[] {
     const uint8Array = new Uint8Array(buffer);
     const chunks: bigint[] = [];
 
     for (let i = 0; i < uint8Array.length; i += WebFileProcessor.CHUNK_SIZE) {
-      // 创建固定大小的块（32字节）
+      // Create fixed-size chunks (32 bytes)
       const chunkBytes = new Uint8Array(WebFileProcessor.CHUNK_SIZE);
       const actualChunkSize = Math.min(
         WebFileProcessor.CHUNK_SIZE,
         uint8Array.length - i
       );
 
-      // 复制实际数据
+      // Copy actual data
       for (let j = 0; j < actualChunkSize; j++) {
         chunkBytes[j] = uint8Array[i + j];
       }
 
-      // 将字节数组转换为bigint（小端序）
+      // Convert byte array to bigint (little-endian)
       let bigintValue = 0n;
       for (let j = WebFileProcessor.CHUNK_SIZE - 1; j >= 0; j--) {
         bigintValue = (bigintValue << 8n) + BigInt(chunkBytes[j]);
@@ -63,8 +63,8 @@ export class WebFileProcessor {
   }
 
   /**
-   * 将bigint数组转换为ArrayBuffer
-   */
+ * Convert bigint array to ArrayBuffer
+ */
   private bigIntChunksToArrayBuffer(
     chunks: bigint[],
     originalSize: number
@@ -75,21 +75,21 @@ export class WebFileProcessor {
     for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex++) {
       const chunk = chunks[chunkIndex];
 
-      // 将bigint转换为字节数组（固定32字节）
+      // Convert bigint to byte array (fixed 32 bytes)
       const chunkBytes = new Uint8Array(WebFileProcessor.CHUNK_SIZE);
       let value = chunk;
 
-      // 从高位到低位填充字节（小端序）
+      // Fill bytes from high to low (little-endian)
       for (let i = 0; i < WebFileProcessor.CHUNK_SIZE; i++) {
         chunkBytes[i] = Number(value & 0xffn);
         value = value >> 8n;
       }
 
-      // 计算要复制的字节数
+      // Calculate number of bytes to copy
       const remainingBytes = originalSize - offset;
       const bytesToCopy = Math.min(WebFileProcessor.CHUNK_SIZE, remainingBytes);
 
-      // 复制到结果数组
+      // Copy to result array
       for (let i = 0; i < bytesToCopy; i++) {
         result[offset + i] = chunkBytes[i];
       }
@@ -102,25 +102,25 @@ export class WebFileProcessor {
   }
 
   /**
-   * 纯Shamir方案：直接分割文件
-   */
+ * Pure Shamir scheme: directly split file
+ */
   async splitFilePureShamir(
     file: File,
     config: SecretSharingConfig,
     userPassword?: string
   ): Promise<PureShamirSplitResult> {
-    // 读取文件数据
+    // Read file data
     let fileData = await file.arrayBuffer();
     let salt: ArrayBuffer | undefined;
 
-    // 计算原始文件的SHA256哈希
+    // Calculate SHA256 hash of original file
     const originalSHA256 = await calculateSHA256(fileData);
 
-    // 如果有密码，先加密文件数据
+    // If password is provided, encrypt file data first
     if (userPassword) {
       const encryptionResult = await encryptData(fileData, userPassword);
 
-      // 将IV附加到加密数据的开头，这样它也会被分割
+      // Append IV to the beginning of encrypted data, so it will also be split
       const ivBytes = new Uint8Array(encryptionResult.iv);
       const encryptedBytes = new Uint8Array(encryptionResult.encryptedData);
       const combinedData = new Uint8Array(
@@ -133,16 +133,16 @@ export class WebFileProcessor {
       salt = encryptionResult.salt;
     }
 
-    // 将文件数据分块转换为bigint数组
+    // Convert file data to bigint array by chunks
     const chunks = this.arrayBufferToBigIntChunks(fileData);
 
-    // 为每个数据块创建Shamir分割
+    // Create Shamir split for each data chunk
     const allShares: PureShamirShare[][] = [];
 
     for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex++) {
       const chunkShares = splitSecret(chunks[chunkIndex], config);
 
-      // 转换为PureShamirShare格式
+      // Convert to PureShamirShare format
       const pureShamirShares = chunkShares.map(share => ({
         id: share.id,
         value: share.value,
@@ -160,8 +160,8 @@ export class WebFileProcessor {
         threshold: config.threshold,
         totalShares: config.totalShares,
         filename: file.name,
-        originalSize: file.size, // 原始文件大小
-        processedSize: fileData.byteLength, // 加密后的数据大小（如果使用密码）
+        originalSize: file.size, // Original file size
+        processedSize: fileData.byteLength, // Size of encrypted data (if using password)
         chunkSize: WebFileProcessor.CHUNK_SIZE,
         totalChunks: chunks.length,
         usePassword: !!userPassword,
@@ -172,8 +172,8 @@ export class WebFileProcessor {
   }
 
   /**
-   * 创建文件恢复结果
-   */
+ * Create file recovery result
+ */
   private async createRecoveryResult(
     data: ArrayBuffer,
     filename: string
@@ -188,29 +188,29 @@ export class WebFileProcessor {
   }
 
   /**
-   * 纯Shamir方案：从份额恢复文件
-   */
+ * Pure Shamir scheme: recover file from shares
+ */
   async recoverFilePureShamir(
     options: PureShamirRecoveryOptions,
     userPassword?: string
   ): Promise<FileRecoveryResult> {
     const { shares, metadata } = options;
 
-    // 检查密码要求
+    // Check password requirements
     if (metadata.usePassword && !userPassword) {
-      throw new Error('此文件使用密码保护，请提供正确的密码');
+      throw new Error('This file is password protected, please provide the correct password');
     }
 
     if (!metadata.usePassword && userPassword) {
-      throw new Error('此文件未使用密码保护，无需提供密码');
+      throw new Error('This file is not password protected, no password needed');
     }
 
-    // 验证份额数据结构
+    // Validate share data structure
     if (shares.length < metadata.totalChunks) {
-      throw new Error('份额数据不完整');
+      throw new Error('Share data incomplete');
     }
 
-    // 统计实际可用的份额文件数量
+    // Count actual available share files
     const availableShareIds = new Set<number>();
     shares.forEach(chunkShares => {
       chunkShares.forEach(share => {
@@ -220,15 +220,15 @@ export class WebFileProcessor {
 
     if (availableShareIds.size < metadata.threshold) {
       throw new Error(
-        `份额文件不足，需要至少 ${metadata.threshold} 个不同的份额文件，当前只有 ${availableShareIds.size} 个。请上传更多份额文件。`
+        `Insufficient share files, need at least ${metadata.threshold} different share files, currently only have ${availableShareIds.size}. Please upload more share files.`
       );
     }
 
-    // 按数据块恢复
+    // Recover by data chunks
     const recoveredChunks: bigint[] = [];
 
     for (let chunkIndex = 0; chunkIndex < metadata.totalChunks; chunkIndex++) {
-      // 获取当前块的所有份额
+      // Get all shares for current chunk
       const chunkShares: Share[] = [];
 
       if (chunkIndex < shares.length) {
@@ -240,39 +240,39 @@ export class WebFileProcessor {
         });
       }
 
-      // 验证份额数量
+      // Validate share count
       if (chunkShares.length < metadata.threshold) {
         throw new Error(
-          `数据块 ${chunkIndex} 的份额不足，需要至少 ${metadata.threshold} 个份额，当前只有 ${chunkShares.length} 个`
+          `Insufficient shares for data chunk ${chunkIndex}, need at least ${metadata.threshold} shares, currently only have ${chunkShares.length}`
         );
       }
 
-      // 恢复当前块
+      // Recover current chunk
       const recoveredChunk = recoverSecret(chunkShares, metadata.threshold);
       recoveredChunks.push(recoveredChunk);
     }
 
-    // 计算恢复数据的实际大小
-    // 对于使用密码的情况，我们需要恢复所有的数据块（包含 IV + 加密数据）
+    // Calculate actual size of recovered data
+    // For password-protected cases, we need to recover all data chunks (including IV + encrypted data)
     const actualDataSize = metadata.usePassword
       ? metadata.processedSize
       : metadata.originalSize;
 
-    // 将恢复的数据块转换为ArrayBuffer
+    // Convert recovered data chunks to ArrayBuffer
     let recoveredData = this.bigIntChunksToArrayBuffer(
       recoveredChunks,
       actualDataSize
     );
 
-    // 如果使用了密码，需要解密
+    // If password is used, need to decrypt
     if (metadata.usePassword && userPassword && metadata.salt) {
       try {
-        // 从恢复的数据中提取IV（前12字节）和加密数据
+        // Extract IV (first 12 bytes) and encrypted data from recovered data
         const combinedData = new Uint8Array(recoveredData);
-        const ivSize = 12; // AES-GCM的IV大小
+        const ivSize = 12; // AES-GCM IV size
 
         if (combinedData.length < ivSize) {
-          throw new Error('数据损坏：长度不足');
+          throw new Error('Data corruption: insufficient length');
         }
 
         const iv = combinedData.slice(0, ivSize);
@@ -285,7 +285,7 @@ export class WebFileProcessor {
           iv.buffer
         );
       } catch (error) {
-        throw new Error('密码错误或数据损坏');
+        throw new Error('Password error or data corruption');
       }
     }
 
@@ -293,19 +293,19 @@ export class WebFileProcessor {
   }
 
   /**
-   * 生成纯Shamir方案的份额文件
-   */
+ * Generate share files for pure Shamir scheme
+ */
   generatePureShamirShareFiles(
     shares: PureShamirShare[][],
     metadata: any
   ): PureShamirShareFile[] {
     const shareFiles: PureShamirShareFile[] = [];
 
-    // 按份额ID组织数据
+    // Organize data by share ID
     for (let shareId = 1; shareId <= metadata.totalShares; shareId++) {
       const shareData: PureShamirShare[] = [];
 
-      // 收集该份额在所有数据块中的部分
+      // Collect parts of this share in all data chunks
       for (let chunkIndex = 0; chunkIndex < shares.length; chunkIndex++) {
         const chunkShares = shares[chunkIndex];
         const shareForChunk = chunkShares.find(s => s.id === shareId);
@@ -330,15 +330,15 @@ export class WebFileProcessor {
   }
 
   /**
-   * 解析纯Shamir方案的份额文件
-   */
+ * Parse share files for pure Shamir scheme
+ */
   parsePureShamirShareFiles(
     shareFilesData: string[]
   ): PureShamirRecoveryOptions {
     const allShares: PureShamirShare[][] = [];
     let metadata: any = null;
 
-    // 解析每个份额文件
+    // Parse each share file
     for (const shareFileData of shareFilesData) {
       const shareFile: PureShamirShareFile = JSON.parse(
         shareFileData,
@@ -350,7 +350,7 @@ export class WebFileProcessor {
         }
       );
 
-      // 设置元数据
+      // Set metadata
       if (!metadata) {
         metadata = {
           ...shareFile.metadata,
@@ -358,13 +358,13 @@ export class WebFileProcessor {
             ? base64ToArrayBuffer(shareFile.metadata.salt)
             : undefined,
         };
-        // 初始化按数据块组织的份额数组
+        // Initialize share array organized by data chunks
         for (let i = 0; i < metadata.totalChunks; i++) {
           allShares[i] = [];
         }
       }
 
-      // 将份额按数据块组织
+      // Organize shares by data chunks
       for (const share of shareFile.shares) {
         if (share.chunkIndex < allShares.length) {
           allShares[share.chunkIndex].push(share);
@@ -376,18 +376,18 @@ export class WebFileProcessor {
   }
 
   /**
-   * 检测份额文件的方案类型
+   * Detects the scheme type of the share file
    */
   detectScheme(shareFileData: string): EncryptionScheme {
     try {
       const shareFile = JSON.parse(shareFileData);
 
-      // 检查是否包含scheme字段
+      // Check if the scheme field is included
       if (shareFile.metadata && shareFile.metadata.scheme) {
         return shareFile.metadata.scheme;
       }
 
-      // 检查是否包含纯Shamir方案的特征
+      // Check if it contains features of pure Shamir scheme
       if (
         shareFile.shareId &&
         shareFile.shares &&
@@ -396,7 +396,7 @@ export class WebFileProcessor {
         return 'pure-shamir';
       }
 
-      // 默认为混合方案
+      // Default to hybrid scheme
       return 'hybrid';
     } catch (error) {
       return 'hybrid';
@@ -404,29 +404,29 @@ export class WebFileProcessor {
   }
 
   /**
-   * 加密并分割文件
-   * @param file 要加密的文件
-   * @param config 分割配置
-   * @param userPassword 用户密码（可选）
+   * Encrypts and splits the file
+   * @param file The file to encrypt
+   * @param config Splitting configuration
+   * @param userPassword User password (optional)
    */
   async splitFile(
     file: File,
     config: SecretSharingConfig,
     userPassword?: string
   ): Promise<FileSplitResult> {
-    // 读取文件数据
+    // Read file data
     const fileData = await file.arrayBuffer();
 
-    // 计算原始文件的SHA256哈希
+    // Calculate SHA256 hash of original file
     const originalSHA256 = await calculateSHA256(fileData);
 
-    // 加密文件
+    // Encrypt file
     const encryptionResult = await encryptData(fileData, userPassword);
 
-    // 将加密密钥转换为bigint进行分割
+    // Convert encryption key to bigint for splitting
     const keyBigInt = arrayBufferToBigInt(encryptionResult.key);
 
-    // 分割密钥
+    // Split key
     const keyShares = splitSecret(keyBigInt, config);
 
     return {
@@ -446,10 +446,10 @@ export class WebFileProcessor {
   }
 
   /**
-   * 从份额恢复文件
-   * @param encryptedData 加密的文件数据
-   * @param options 恢复选项
-   * @param userPassword 用户密码（当使用密码加密时需要）
+   * Recovers file from shares
+   * @param encryptedData Encrypted file data
+   * @param options Recovery options
+   * @param userPassword User password (required when using password encryption)
    */
   async recoverFile(
     encryptedData: ArrayBuffer,
@@ -458,24 +458,24 @@ export class WebFileProcessor {
   ): Promise<FileRecoveryResult> {
     const { shares, metadata } = options;
 
-    // 验证份额数量
+    // Validate share count
     if (shares.length < metadata.threshold) {
-      throw new Error(`需要至少${metadata.threshold}个份额才能恢复文件`);
+      throw new Error(`Need at least ${metadata.threshold} shares to recover file`);
     }
 
-    // 检查是否需要密码
+    // Check if password is required
     if (metadata.usePassword && !userPassword) {
-      throw new Error('此文件使用密码加密，请提供正确的密码');
+      throw new Error('This file is password encrypted, please provide the correct password');
     }
 
     if (!metadata.usePassword && userPassword) {
-      throw new Error('此文件未使用密码加密，无需提供密码');
+      throw new Error('This file is not password encrypted, no password needed');
     }
 
     let decryptedData: ArrayBuffer;
 
     if (metadata.usePassword && userPassword && metadata.salt) {
-      // 使用密码解密（不需要恢复密钥）
+      // Decrypt with password (no key recovery needed)
       decryptedData = await decryptDataWithPassword(
         encryptedData,
         userPassword,
@@ -483,7 +483,7 @@ export class WebFileProcessor {
         metadata.iv
       );
     } else {
-      // 从份额恢复密钥并解密
+      // Recover key from shares and decrypt
       const recoveredKeyBigInt = recoverSecret(shares, metadata.threshold);
       const recoveredKey = bigIntToArrayBuffer(recoveredKeyBigInt, 32);
       decryptedData = await decryptData(
@@ -497,7 +497,7 @@ export class WebFileProcessor {
   }
 
   /**
-   * 生成份额文件下载数据
+   * Generates share file download data
    */
   generateShareFiles(shares: Share[], metadata: any): ShareFile[] {
     return shares.map(share => ({
@@ -511,7 +511,7 @@ export class WebFileProcessor {
   }
 
   /**
-   * 解析份额文件
+   * Parses share files
    */
   parseShareFiles(shareFilesData: string[]): RecoveryOptions {
     const shares: Share[] = [];
@@ -542,7 +542,7 @@ export class WebFileProcessor {
   }
 
   /**
-   * 下载文件
+   * Downloads a file
    */
   downloadFile(
     data: ArrayBuffer,
@@ -561,7 +561,7 @@ export class WebFileProcessor {
   }
 
   /**
-   * 下载JSON文件
+   * Downloads a JSON file
    */
   downloadJson(data: any, filename: string) {
     const jsonString = JSON.stringify(
@@ -587,7 +587,7 @@ export class WebFileProcessor {
   }
 
   /**
-   * 下载哈希记录文件
+   * Downloads a hash record file
    */
   downloadHashRecord(result: FileRecoveryResult, originalFilename: string) {
     const hashRecord = {
@@ -595,7 +595,7 @@ export class WebFileProcessor {
       recoveredFilename: result.filename,
       recoveredSHA256: result.recoveredSHA256,
       timestamp: new Date().toISOString(),
-      note: '文件已成功恢复，可通过SHA256验证完整性',
+      note: 'File successfully recovered, integrity can be verified via SHA256',
     };
 
     const jsonString = JSON.stringify(hashRecord, null, 2);

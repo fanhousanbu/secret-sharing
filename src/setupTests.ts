@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 
-// 模拟TextEncoder和TextDecoder
+// Mock TextEncoder and TextDecoder
 global.TextEncoder = class TextEncoder {
   encode(input: string): Uint8Array {
     const bytes = new Uint8Array(input.length);
@@ -17,7 +17,7 @@ global.TextDecoder = class TextDecoder {
   }
 } as any;
 
-// 模拟window.crypto
+// Mock window.crypto
 Object.defineProperty(window, 'crypto', {
   value: {
     getRandomValues: jest.fn((arr: Uint8Array) => {
@@ -38,7 +38,7 @@ Object.defineProperty(window, 'crypto', {
   },
 });
 
-// 模拟File API
+// Mock File API
 global.File = class File {
   name: string;
   size: number;
@@ -53,7 +53,7 @@ global.File = class File {
   }
 } as any;
 
-// 模拟FileReader
+// Mock FileReader
 global.FileReader = class FileReader {
   onload: ((this: FileReader, ev: ProgressEvent) => any) | null = null;
   onerror: ((this: FileReader, ev: ProgressEvent) => any) | null = null;

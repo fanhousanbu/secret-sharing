@@ -31,7 +31,7 @@ export const LanguageSwitcher: React.FC = () => {
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           }`}
         >
-          中文
+          Chinese
         </button>
       </div>
     </div>

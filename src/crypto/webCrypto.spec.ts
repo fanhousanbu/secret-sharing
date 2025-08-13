@@ -11,7 +11,7 @@ import {
   calculateFileSHA256,
 } from './webCrypto';
 
-// 模拟File API
+// Mock File API
 global.File = class File {
   name: string;
   size: number;
@@ -30,11 +30,11 @@ global.File = class File {
   }
 } as any;
 
-describe('WebCrypto工具函数', () => {
+describe('WebCrypto utility functions', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // 设置默认的mock实现
+    // Set default mock implementations
     (window.crypto.getRandomValues as jest.Mock).mockImplementation(arr => {
       for (let i = 0; i < arr.length; i++) {
         arr[i] = Math.floor(Math.random() * 256);
@@ -44,7 +44,7 @@ describe('WebCrypto工具函数', () => {
   });
 
   describe('deriveKeyFromPassword', () => {
-    test('应该能够从密码派生密钥', async () => {
+    test('should be able to derive key from password', async () => {
       const password = 'testPassword';
       const salt = new ArrayBuffer(16);
 
@@ -52,7 +52,7 @@ describe('WebCrypto工具函数', () => {
       const mockDerivedKey = {} as CryptoKey;
       const mockExportedKey = new ArrayBuffer(32);
 
-      // 设置正确的 mock 实现
+      // Set correct mock implementations
       (window.crypto.subtle.importKey as jest.Mock).mockResolvedValue(
         mockKeyMaterial
       );
@@ -96,7 +96,7 @@ describe('WebCrypto工具函数', () => {
   });
 
   describe('encryptData', () => {
-    test('应该能够加密数据（使用随机密钥）', async () => {
+    test('should be able to encrypt data (using random key)', async () => {
       const data = new ArrayBuffer(10);
       const mockKey = {} as CryptoKey;
       const mockExportedKey = new ArrayBuffer(32);
@@ -123,7 +123,7 @@ describe('WebCrypto工具函数', () => {
       expect(result.salt).toBeUndefined();
     });
 
-    test('应该能够使用密码加密数据', async () => {
+    test('should be able to encrypt data with password', async () => {
       const data = new ArrayBuffer(10);
       const password = 'testPassword';
       const mockSalt = new Uint8Array(16);
@@ -133,8 +133,8 @@ describe('WebCrypto工具函数', () => {
       const mockEncryptedData = new ArrayBuffer(20);
 
       (window.crypto.getRandomValues as jest.Mock)
-        .mockReturnValueOnce(mockSalt) // 第一次调用生成salt
-        .mockReturnValueOnce(mockIv); // 第二次调用生成iv
+        .mockReturnValueOnce(mockSalt) // First call generates salt
+        .mockReturnValueOnce(mockIv); // Second call generates iv
 
       (window.crypto.subtle.importKey as jest.Mock).mockResolvedValue(mockKey);
       (window.crypto.subtle.deriveKey as jest.Mock).mockResolvedValue(mockKey);
@@ -156,7 +156,7 @@ describe('WebCrypto工具函数', () => {
   });
 
   describe('decryptData', () => {
-    test('应该能够解密数据', async () => {
+    test('should be able to decrypt data', async () => {
       const encryptedData = new ArrayBuffer(20);
       const keyBuffer = new ArrayBuffer(32);
       const iv = new ArrayBuffer(12);
@@ -185,7 +185,7 @@ describe('WebCrypto工具函数', () => {
   });
 
   describe('decryptDataWithPassword', () => {
-    test('应该能够使用密码解密数据', async () => {
+    test('should be able to decrypt data with password', async () => {
       const encryptedData = new ArrayBuffer(20);
       const password = 'testPassword';
       const salt = new ArrayBuffer(16);
@@ -218,7 +218,7 @@ describe('WebCrypto工具函数', () => {
   });
 
   describe('arrayBufferToBase64', () => {
-    test('应该能够将ArrayBuffer转换为base64', () => {
+    test('should be able to convert ArrayBuffer to base64', () => {
       const buffer = new ArrayBuffer(3);
       const uint8Array = new Uint8Array(buffer);
       uint8Array[0] = 65; // 'A'
@@ -227,13 +227,13 @@ describe('WebCrypto工具函数', () => {
 
       const result = arrayBufferToBase64(buffer);
 
-      expect(result).toBe('QUJD'); // 'ABC'的base64编码
+      expect(result).toBe('QUJD'); // base64 encoding of 'ABC'
     });
   });
 
   describe('base64ToArrayBuffer', () => {
-    test('应该能够将base64转换为ArrayBuffer', () => {
-      const base64 = 'QUJD'; // 'ABC'的base64编码
+    test('should be able to convert base64 to ArrayBuffer', () => {
+      const base64 = 'QUJD'; // base64 encoding of 'ABC'
 
       const result = base64ToArrayBuffer(base64);
       const uint8Array = new Uint8Array(result);
@@ -245,7 +245,7 @@ describe('WebCrypto工具函数', () => {
   });
 
   describe('arrayBufferToBigInt', () => {
-    test('应该能够将ArrayBuffer转换为bigint', () => {
+    test('should be able to convert ArrayBuffer to bigint', () => {
       const buffer = new ArrayBuffer(4);
       const uint8Array = new Uint8Array(buffer);
       uint8Array[0] = 0x12;
@@ -260,7 +260,7 @@ describe('WebCrypto工具函数', () => {
   });
 
   describe('bigIntToArrayBuffer', () => {
-    test('应该能够将bigint转换为ArrayBuffer', () => {
+    test('should be able to convert bigint to ArrayBuffer', () => {
       const value = 0x12345678n;
       const length = 4;
 
@@ -275,7 +275,7 @@ describe('WebCrypto工具函数', () => {
   });
 
   describe('calculateSHA256', () => {
-    test('应该能够计算SHA256哈希', async () => {
+    test('should be able to calculate SHA256 hash', async () => {
       const data = new ArrayBuffer(10);
       const mockDigest = new Uint8Array(32);
 
@@ -284,13 +284,13 @@ describe('WebCrypto工具函数', () => {
       const result = await calculateSHA256(data);
 
       expect(typeof result).toBe('string');
-      expect(result.length).toBe(64); // SHA256哈希的十六进制字符串长度
+              expect(result.length).toBe(64); // Length of SHA256 hash hex string
       expect(window.crypto.subtle.digest).toHaveBeenCalledWith('SHA-256', data);
     });
   });
 
   describe('calculateFileSHA256', () => {
-    test('应该能够计算文件的SHA256哈希', async () => {
+    test('should be able to calculate file SHA256 hash', async () => {
       const mockFile = new File(['test content'], 'test.txt');
       const mockDigest = new Uint8Array(32);
 

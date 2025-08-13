@@ -44,7 +44,7 @@ describe('App Component', () => {
 
   test('should render main container', () => {
     render(<App />);
-    // 检查主容器是否存在
+    // Check if main container exists
     const container = document.querySelector('.min-h-screen');
     expect(container).toBeInTheDocument();
   });
@@ -62,21 +62,21 @@ describe('App Component', () => {
 
   test('should have proper styling classes', () => {
     render(<App />);
-    // 检查容器是否有正确的样式类
+    // Check if container has correct styling classes
     const container = document.querySelector('.container');
     expect(container).toBeInTheDocument();
   });
 
   test('should render features grid', () => {
     render(<App />);
-    // 检查特性网格是否存在
+    // Check if features grid exists
     const grid = document.querySelector('.grid');
     expect(grid).toBeInTheDocument();
   });
 
   test('should render footer section', () => {
     render(<App />);
-    // 检查页脚区域是否存在
+    // Check if footer section exists
     const footer = document.querySelector('.text-center.mt-8');
     expect(footer).toBeInTheDocument();
   });
@@ -107,7 +107,7 @@ describe('App Component', () => {
 
   test('should have responsive design classes', () => {
     render(<App />);
-    // 检查容器是否有正确的样式类
+    // Check if container has correct styling classes
     const container = document.querySelector('.container');
     expect(container).toBeInTheDocument();
   });

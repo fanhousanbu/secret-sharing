@@ -1,6 +1,6 @@
 import { splitSecret, recoverSecret } from './shamir';
 
-// 模拟crypto.getRandomValues
+// Mock crypto.getRandomValues
 Object.defineProperty(global, 'crypto', {
   value: {
     getRandomValues: jest.fn(arr => {
@@ -14,7 +14,7 @@ Object.defineProperty(global, 'crypto', {
 
 describe('Shamir Secret Sharing', () => {
   describe('splitSecret', () => {
-    test('应该分割秘密为指定数量的份额', () => {
+    test('should split secret into specified number of shares', () => {
       const secret = 123456789n;
       const config = { threshold: 3, totalShares: 5 };
 
@@ -27,19 +27,19 @@ describe('Shamir Secret Sharing', () => {
       });
     });
 
-    test('应该生成不同的份额', () => {
+    test('should generate different shares', () => {
       const secret = 987654321n;
       const config = { threshold: 2, totalShares: 4 };
 
       const shares = splitSecret(secret, config);
 
-      // 检查份额值是否不同
+      // Check if share values are different
       const values = shares.map(s => s.value);
       const uniqueValues = new Set(values);
       expect(uniqueValues.size).toBe(4);
     });
 
-    test('应该处理阈值等于总份额的情况', () => {
+    test('should handle threshold equal to total shares', () => {
       const secret = 42n;
       const config = { threshold: 3, totalShares: 3 };
 
@@ -48,23 +48,23 @@ describe('Shamir Secret Sharing', () => {
       expect(shares).toHaveLength(3);
     });
 
-    test('应该在阈值大于总份额时抛出错误', () => {
+    test('should throw error when threshold is greater than total shares', () => {
       const secret = 100n;
       const config = { threshold: 4, totalShares: 3 };
 
-      expect(() => splitSecret(secret, config)).toThrow('阈值不能大于总份额数');
+      expect(() => splitSecret(secret, config)).toThrow('Threshold cannot be greater than total shares');
     });
 
-    test('应该在阈值小于2时抛出错误', () => {
+    test('should throw error when threshold is less than 2', () => {
       const secret = 100n;
       const config = { threshold: 1, totalShares: 3 };
 
-      expect(() => splitSecret(secret, config)).toThrow('阈值必须至少为2');
+      expect(() => splitSecret(secret, config)).toThrow('Threshold must be at least 2');
     });
   });
 
   describe('recoverSecret', () => {
-    test('应该从足够的份额中恢复秘密', () => {
+    test('should recover secret from sufficient shares', () => {
       const secret = 123456789n;
       const config = { threshold: 3, totalShares: 5 };
 
@@ -76,7 +76,7 @@ describe('Shamir Secret Sharing', () => {
       expect(recoveredSecret).toBe(secret);
     });
 
-    test('应该从不同份额组合中恢复秘密', () => {
+    test('should recover secret from different share combinations', () => {
       const secret = 987654321n;
       const config = { threshold: 3, totalShares: 5 };
 
@@ -88,7 +88,7 @@ describe('Shamir Secret Sharing', () => {
       expect(recoveredSecret).toBe(secret);
     });
 
-    test('应该处理最小份额数量', () => {
+    test('should handle minimum number of shares', () => {
       const secret = 42n;
       const config = { threshold: 2, totalShares: 3 };
 
@@ -100,7 +100,7 @@ describe('Shamir Secret Sharing', () => {
       expect(recoveredSecret).toBe(secret);
     });
 
-    test('应该处理所有份额', () => {
+    test('should handle all shares', () => {
       const secret = 100n;
       const config = { threshold: 2, totalShares: 4 };
 
@@ -111,21 +111,21 @@ describe('Shamir Secret Sharing', () => {
       expect(recoveredSecret).toBe(secret);
     });
 
-    test('应该在份额不足时抛出错误', () => {
+    test('should throw error when insufficient shares', () => {
       const secret = 100n;
       const config = { threshold: 3, totalShares: 5 };
 
       const allShares = splitSecret(secret, config);
-      const sharesToUse = allShares.slice(0, 2); // 只有2个份额，需要3个
+      const sharesToUse = allShares.slice(0, 2); // Only 2 shares, need 3
 
       expect(() => recoverSecret(sharesToUse, 3)).toThrow(
-        '需要至少3个份额才能恢复秘密'
+        'Need at least 3 shares to recover secret'
       );
     });
   });
 
-  describe('边界情况', () => {
-    test('应该处理零值秘密', () => {
+  describe('Edge cases', () => {
+    test('should handle zero value secret', () => {
       const secret = 0n;
       const config = { threshold: 2, totalShares: 3 };
 
@@ -135,8 +135,8 @@ describe('Shamir Secret Sharing', () => {
       expect(recoveredSecret).toBe(secret);
     });
 
-    test('应该处理大数值秘密', () => {
-      const secret = 2n ** 100n; // 大数值测试
+    test('should handle large value secret', () => {
+      const secret = 2n ** 100n; // Large value test
       const config = { threshold: 3, totalShares: 5 };
 
       const shares = splitSecret(secret, config);
@@ -145,10 +145,10 @@ describe('Shamir Secret Sharing', () => {
       expect(recoveredSecret).toBe(secret);
     });
 
-    test('应该处理接近素数边界的值', () => {
-      // 使用新的安全质数进行测试
+    test('should handle values near prime boundary', () => {
+      // Use new secure prime for testing
       const prime = 2n ** 256n - 2n ** 224n + 2n ** 192n + 2n ** 96n - 1n;
-      const secret = prime - 1n; // 接近素数的值
+      const secret = prime - 1n; // Value close to prime
       const config = { threshold: 2, totalShares: 3 };
 
       const shares = splitSecret(secret, config);
@@ -157,11 +157,11 @@ describe('Shamir Secret Sharing', () => {
       expect(recoveredSecret).toBe(secret);
     });
 
-    test('应该处理重复测试的一致性', () => {
+    test('should handle consistency of repeated tests', () => {
       const secret = 12345n;
       const config = { threshold: 3, totalShares: 5 };
 
-      // 多次测试确保结果一致
+      // Multiple tests to ensure consistent results
       for (let i = 0; i < 3; i++) {
         const shares = splitSecret(secret, config);
         const recoveredSecret = recoverSecret(shares.slice(0, 3), 3);
@@ -170,33 +170,33 @@ describe('Shamir Secret Sharing', () => {
     });
   });
 
-  describe('数学运算', () => {
-    test('应该正确处理模运算', () => {
+  describe('Mathematical operations', () => {
+    test('should correctly handle modular arithmetic', () => {
       const secret = 1000n;
       const config = { threshold: 2, totalShares: 3 };
 
       const shares = splitSecret(secret, config);
 
-      // 验证所有份额值都在合理范围内
+      // Verify all share values are within reasonable range
       shares.forEach(share => {
         expect(share.value).toBeGreaterThanOrEqual(0n);
-        // 份额值应该小于素数
+        // Share values should be less than prime
         expect(share.value).toBeLessThan(2n ** 256n);
       });
     });
 
-    test('应该生成足够随机的系数', () => {
+    test('should generate sufficiently random coefficients', () => {
       const secret = 100n;
       const config = { threshold: 3, totalShares: 5 };
 
       const shares1 = splitSecret(secret, config);
       const shares2 = splitSecret(secret, config);
 
-      // 除了第一个份额（可能相同），其他份额应该不同
+      // Except for the first share (which may be the same), other shares should be different
       const values1 = shares1.map(s => s.value);
       const values2 = shares2.map(s => s.value);
 
-      // 至少有一些份额值应该不同（由于随机性）
+      // At least some share values should be different (due to randomness)
       let differentCount = 0;
       for (let i = 0; i < values1.length; i++) {
         if (values1[i] !== values2[i]) {

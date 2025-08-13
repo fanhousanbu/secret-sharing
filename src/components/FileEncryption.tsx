@@ -369,7 +369,7 @@ export const FileEncryption: React.FC = () => {
                   <p>{t.pureShamirInfoDesc3}</p>
                   <p>
                     {formatMessage('pureShamirInfoDesc4', {
-                      usePassword: usePassword ? '和密码' : '',
+                      usePassword: usePassword ? ' and password' : '',
                     })}
                   </p>
                 </div>

@@ -1,7 +1,7 @@
 import { EncryptionResult } from './types';
 
 /**
- * 从密码派生密钥（使用PBKDF2）
+ * Derive key from password (using PBKDF2)
  */
 export async function deriveKeyFromPassword(
   password: string,
@@ -10,7 +10,7 @@ export async function deriveKeyFromPassword(
   const encoder = new TextEncoder();
   const passwordBuffer = encoder.encode(password);
 
-  // 导入密码作为原始密钥材料
+  // Import password as raw key material
   const keyMaterial = await crypto.subtle.importKey(
     'raw',
     passwordBuffer,
@@ -19,12 +19,12 @@ export async function deriveKeyFromPassword(
     ['deriveKey']
   );
 
-  // 使用PBKDF2派生密钥
+  // Use PBKDF2 to derive key
   const derivedKey = await crypto.subtle.deriveKey(
     {
       name: 'PBKDF2',
       salt: salt,
-      iterations: 100000, // 10万次迭代
+      iterations: 100000, // 100,000 iterations
       hash: 'SHA-256',
     },
     keyMaterial,
@@ -40,9 +40,9 @@ export async function deriveKeyFromPassword(
 }
 
 /**
- * 使用Web Crypto API进行AES-GCM加密
- * @param data 要加密的数据
- * @param userPassword 用户密码（可选）
+ * Use Web Crypto API for AES-GCM encryption
+ * @param data Data to encrypt
+ * @param userPassword User password (optional)
  */
 export async function encryptData(
   data: ArrayBuffer,
@@ -52,11 +52,11 @@ export async function encryptData(
   let salt: ArrayBuffer | undefined;
 
   if (userPassword) {
-    // 使用用户密码派生密钥
-    salt = crypto.getRandomValues(new Uint8Array(16)); // 128位盐值
+    // Derive key from user password
+    salt = crypto.getRandomValues(new Uint8Array(16)); // 128-bit salt
     keyBuffer = await deriveKeyFromPassword(userPassword, salt);
   } else {
-    // 生成随机密钥
+    // Generate random key
     const key = await crypto.subtle.generateKey(
       {
         name: 'AES-GCM',
@@ -68,7 +68,7 @@ export async function encryptData(
     keyBuffer = await crypto.subtle.exportKey('raw', key);
   }
 
-  // 导入密钥
+  // Import key
   const key = await crypto.subtle.importKey(
     'raw',
     keyBuffer,
@@ -80,10 +80,10 @@ export async function encryptData(
     ['encrypt']
   );
 
-  // 生成随机初始化向量
+  // Generate random initialization vector
   const iv = crypto.getRandomValues(new Uint8Array(12));
 
-  // 加密数据
+  // Encrypt data
   const encryptedData = await crypto.subtle.encrypt(
     {
       name: 'AES-GCM',
@@ -107,14 +107,14 @@ export async function encryptData(
 }
 
 /**
- * 使用Web Crypto API进行AES-GCM解密
+ * Use Web Crypto API for AES-GCM decryption
  */
 export async function decryptData(
   encryptedData: ArrayBuffer,
   keyBuffer: ArrayBuffer,
   iv: ArrayBuffer
 ): Promise<ArrayBuffer> {
-  // 导入密钥
+  // Import key
   const key = await crypto.subtle.importKey(
     'raw',
     keyBuffer,
@@ -126,7 +126,7 @@ export async function decryptData(
     ['decrypt']
   );
 
-  // 解密数据
+  // Decrypt data
   const decryptedData = await crypto.subtle.decrypt(
     {
       name: 'AES-GCM',
@@ -140,7 +140,7 @@ export async function decryptData(
 }
 
 /**
- * 使用用户密码解密（需要salt）
+ * Decrypt with user password (requires salt)
  */
 export async function decryptDataWithPassword(
   encryptedData: ArrayBuffer,
@@ -153,7 +153,7 @@ export async function decryptDataWithPassword(
 }
 
 /**
- * ArrayBuffer转换为base64字符串
+ * Convert ArrayBuffer to base64 string
  */
 export function arrayBufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
@@ -165,7 +165,7 @@ export function arrayBufferToBase64(buffer: ArrayBuffer): string {
 }
 
 /**
- * base64字符串转换为ArrayBuffer
+ * Convert base64 string to ArrayBuffer
  */
 export function base64ToArrayBuffer(base64: string): ArrayBuffer {
   const binary = atob(base64);
@@ -177,7 +177,7 @@ export function base64ToArrayBuffer(base64: string): ArrayBuffer {
 }
 
 /**
- * ArrayBuffer转换为bigint
+ * Convert ArrayBuffer to bigint
  */
 export function arrayBufferToBigInt(buffer: ArrayBuffer): bigint {
   const bytes = new Uint8Array(buffer);
@@ -189,7 +189,7 @@ export function arrayBufferToBigInt(buffer: ArrayBuffer): bigint {
 }
 
 /**
- * bigint转换为ArrayBuffer
+ * Convert bigint to ArrayBuffer
  */
 export function bigIntToArrayBuffer(
   value: bigint,
@@ -204,7 +204,7 @@ export function bigIntToArrayBuffer(
 }
 
 /**
- * 计算ArrayBuffer的SHA256哈希值
+ * Calculate SHA256 hash of ArrayBuffer
  */
 export async function calculateSHA256(data: ArrayBuffer): Promise<string> {
   const hashBuffer = await crypto.subtle.digest('SHA-256', data);
@@ -214,7 +214,7 @@ export async function calculateSHA256(data: ArrayBuffer): Promise<string> {
 }
 
 /**
- * 计算文件的SHA256哈希值
+ * Calculate SHA256 hash of file
  */
 export async function calculateFileSHA256(file: File): Promise<string> {
   const buffer = await file.arrayBuffer();

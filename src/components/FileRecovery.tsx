@@ -61,7 +61,7 @@ export const FileRecovery: React.FC = () => {
   ) => {
     const files = Array.from(event.target.files || []);
 
-    // 检查方案类型和是否需要密码
+    // Check scheme type and whether password is needed
     let needsPassword = false;
     let detectedScheme: EncryptionScheme | null = null;
 
@@ -70,15 +70,15 @@ export const FileRecovery: React.FC = () => {
         const firstFile = files[0];
         const content = await firstFile.text();
 
-        // 检测方案类型
+        // Detect scheme type
         detectedScheme = processor.detectScheme(content);
 
-        // 检查是否需要密码（两种方案都支持密码）
+        // Check if password is needed (both schemes support password)
         const shareData = JSON.parse(content);
         needsPassword = shareData.metadata?.usePassword || false;
       } catch (err) {
-        // 忽略解析错误，继续处理
-        detectedScheme = 'hybrid'; // 默认为混合方案
+        // Ignore parsing errors, continue processing
+        detectedScheme = 'hybrid'; // Default to hybrid scheme
       }
     }
 
@@ -94,7 +94,7 @@ export const FileRecovery: React.FC = () => {
   };
 
   const handleRecover = async () => {
-    // 对于混合方案，需要加密文件
+    // For hybrid scheme, encrypted file is needed
     if (state.detectedScheme === 'hybrid' && !state.encryptedFile) {
       setState(prev => ({ ...prev, error: t.errorHybridNeedsEncrypted }));
       return;
@@ -113,7 +113,7 @@ export const FileRecovery: React.FC = () => {
     setState(prev => ({ ...prev, isProcessing: true, error: '' }));
 
     try {
-      // 读取份额文件
+      // Read share files
       const shareFilesData = await Promise.all(
         state.shareFiles.map(file => file.text())
       );
@@ -121,7 +121,7 @@ export const FileRecovery: React.FC = () => {
       let recoveryResult: FileRecoveryResult;
 
       if (state.detectedScheme === 'pure-shamir') {
-        // 纯Shamir方案恢复
+        // Pure Shamir scheme recovery
         const recoveryOptions =
           processor.parsePureShamirShareFiles(shareFilesData);
         recoveryResult = await processor.recoverFilePureShamir(
@@ -129,9 +129,9 @@ export const FileRecovery: React.FC = () => {
           state.needsPassword ? state.password : undefined
         );
       } else {
-        // 混合方案恢复
+        // Hybrid scheme recovery
         if (!state.encryptedFile) {
-          throw new Error('混合方案需要加密文件');
+          throw new Error('Hybrid scheme requires encrypted file');
         }
 
         const encryptedData = await state.encryptedFile.arrayBuffer();
@@ -260,7 +260,7 @@ export const FileRecovery: React.FC = () => {
                     <p>
                       {formatMessage('pureShamirRecoveryDesc', {
                         needsPassword: state.needsPassword
-                          ? '和正确的密码'
+                          ? 'and correct password'
                           : '',
                       })}
                     </p>
@@ -437,7 +437,7 @@ export const FileRecovery: React.FC = () => {
                 })}
               </p>
 
-              {/* 文件完整性验证 */}
+              {/* File integrity verification */}
               {state.result && (
                 <div className="mt-3 p-3 bg-blue-50 rounded-md">
                   <p className="text-sm text-blue-800 mb-1">

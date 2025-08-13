@@ -45,7 +45,7 @@ describe('FileRecovery Component', () => {
 
   test('should render file recovery title', () => {
     render(<FileRecovery />);
-    // 断言有标题元素（h2）
+    // Assert there is a title element (h2)
     const title = document.querySelector('h2');
     expect(title).toBeInTheDocument();
     expect(title).toHaveClass('text-2xl', 'font-bold', 'text-gray-800');
@@ -53,7 +53,7 @@ describe('FileRecovery Component', () => {
 
   test('should render encrypted file upload section', () => {
     render(<FileRecovery />);
-    // 断言有文件上传区域（通过 input[type="file"] 和 accept=".encrypted"）
+    // Assert there is a file upload area (via input[type="file"] and accept=".encrypted")
     const fileInputs = document.querySelectorAll('input[type="file"]');
     expect(fileInputs.length).toBeGreaterThan(0);
     const encryptedFileInput = fileInputs[0] as HTMLInputElement;
@@ -62,7 +62,7 @@ describe('FileRecovery Component', () => {
 
   test('should render share files upload section', () => {
     render(<FileRecovery />);
-    // 断言有份额文件上传区域（通过 input[type="file"] 和 accept=".json"）
+    // Assert there is a share files upload area (via input[type="file"] and accept=".json")
     const fileInputs = document.querySelectorAll('input[type="file"]');
     expect(fileInputs.length).toBeGreaterThan(1);
     const shareFileInput = fileInputs[1] as HTMLInputElement;
@@ -72,10 +72,10 @@ describe('FileRecovery Component', () => {
 
   test('should render recovery button', () => {
     render(<FileRecovery />);
-    // 断言有一个全宽主按钮（恢复按钮）
+    // Assert there is a full-width main button (recovery button)
     const buttons = screen.getAllByRole('button');
     expect(buttons.length).toBeGreaterThan(0);
-    // 恢复按钮通常是最后一个主按钮
+    // Recovery button is usually the last main button
     const mainButton = buttons[buttons.length - 1];
     expect(mainButton).toBeInTheDocument();
     expect(mainButton).toHaveClass('w-full');
@@ -131,7 +131,7 @@ describe('FileRecovery Component', () => {
     ) as HTMLInputElement;
     fireEvent.change(fileInput, { target: { files: [file] } });
     await waitFor(() => {
-      // 检查是否有删除按钮（通过按钮数量变化）
+      // Check if there is a remove button (by button count change)
       const buttons = screen.getAllByRole('button');
       expect(buttons.length).toBeGreaterThan(0);
     });
@@ -148,7 +148,7 @@ describe('FileRecovery Component', () => {
     const shareFileInput = fileInputs[1] as HTMLInputElement;
     fireEvent.change(shareFileInput, { target: { files: [shareFile] } });
     await waitFor(() => {
-      // 检查 share 文件名是否渲染
+      // Check if share filename is rendered
       expect(screen.getByText('share1.json')).toBeInTheDocument();
     });
   });
@@ -166,7 +166,7 @@ describe('FileRecovery Component', () => {
     const shareFileInput = fileInputs[1] as HTMLInputElement;
     fireEvent.change(shareFileInput, { target: { files: [shareFile] } });
     await waitFor(() => {
-      // 检查 info 区域是否渲染（通过 svg 图标）
+      // Check if info area is rendered (via svg icons)
       const infoIcons = document.querySelectorAll('svg');
       expect(infoIcons.length).toBeGreaterThan(0);
     });

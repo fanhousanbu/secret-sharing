@@ -5,9 +5,9 @@ import {
   FileRecoveryResult,
 } from './types';
 
-describe('TypeScript类型定义', () => {
-  describe('Share类型', () => {
-    test('应该能够创建有效的Share对象', () => {
+describe('TypeScript type definitions', () => {
+  describe('Share type', () => {
+    test('should be able to create valid Share object', () => {
       const share: Share = {
         id: 1,
         value: 123456789n,
@@ -19,7 +19,7 @@ describe('TypeScript类型定义', () => {
       expect(typeof share.value).toBe('bigint');
     });
 
-    test('应该能够创建多个Share对象', () => {
+    test('should be able to create multiple Share objects', () => {
       const shares: Share[] = [
         { id: 1, value: 100n },
         { id: 2, value: 200n },
@@ -33,7 +33,7 @@ describe('TypeScript类型定义', () => {
       });
     });
 
-    test('应该能够处理大数值', () => {
+    test('should be able to handle large values', () => {
       const share: Share = {
         id: 1,
         value: 2n ** 100n,
@@ -44,8 +44,8 @@ describe('TypeScript类型定义', () => {
     });
   });
 
-  describe('SecretSharingConfig类型', () => {
-    test('应该能够创建有效的配置对象', () => {
+  describe('SecretSharingConfig type', () => {
+    test('should be able to create valid config object', () => {
       const config: SecretSharingConfig = {
         threshold: 3,
         totalShares: 5,
@@ -57,7 +57,7 @@ describe('TypeScript类型定义', () => {
       expect(typeof config.totalShares).toBe('number');
     });
 
-    test('应该能够处理不同的配置值', () => {
+    test('should be able to handle different config values', () => {
       const configs: SecretSharingConfig[] = [
         { threshold: 2, totalShares: 3 },
         { threshold: 5, totalShares: 7 },
@@ -71,7 +71,7 @@ describe('TypeScript类型定义', () => {
       });
     });
 
-    test('应该能够处理边界值', () => {
+    test('should be able to handle boundary values', () => {
       const config: SecretSharingConfig = {
         threshold: 1,
         totalShares: 1,
@@ -82,8 +82,8 @@ describe('TypeScript类型定义', () => {
     });
   });
 
-  describe('FileMetadata类型', () => {
-    test('应该能够创建基本的元数据对象', () => {
+  describe('FileMetadata type', () => {
+    test('should be able to create basic metadata object', () => {
       const metadata = {
         scheme: 'pure-shamir' as const,
         threshold: 3,
@@ -104,7 +104,7 @@ describe('TypeScript类型定义', () => {
       expect(metadata.salt).toBeUndefined();
     });
 
-    test('应该能够创建带密码的元数据对象', () => {
+    test('should be able to create metadata object with password', () => {
       const salt = new ArrayBuffer(16);
       const metadata = {
         scheme: 'pure-shamir' as const,
@@ -125,7 +125,7 @@ describe('TypeScript类型定义', () => {
       expect(metadata.salt).toBeInstanceOf(ArrayBuffer);
     });
 
-    test('应该能够处理不同的方案', () => {
+    test('should be able to handle different schemes', () => {
       const schemes = ['pure-shamir', 'legacy'] as const;
 
       schemes.forEach(scheme => {
@@ -147,7 +147,7 @@ describe('TypeScript类型定义', () => {
       });
     });
 
-    test('应该能够处理大文件元数据', () => {
+    test('should be able to handle large file metadata', () => {
       const metadata = {
         scheme: 'pure-shamir' as const,
         threshold: 5,
@@ -168,8 +168,8 @@ describe('TypeScript类型定义', () => {
     });
   });
 
-  describe('PureShamirRecoveryOptions类型', () => {
-    test('应该能够创建恢复选项对象', () => {
+  describe('PureShamirRecoveryOptions type', () => {
+    test('should be able to create recovery options object', () => {
       const shares = [
         [
           { id: 1, value: 100n, chunkIndex: 0, totalChunks: 2 },
@@ -206,7 +206,7 @@ describe('TypeScript类型定义', () => {
       expect(options.shares[0]).toHaveLength(2);
     });
 
-    test('应该能够处理带密码的恢复选项', () => {
+    test('should be able to handle recovery options with password', () => {
       const shares = [[{ id: 1, value: 100n, chunkIndex: 0, totalChunks: 1 }]];
 
       const metadata = {
@@ -233,8 +233,8 @@ describe('TypeScript类型定义', () => {
     });
   });
 
-  describe('RecoveryResult类型', () => {
-    test('应该能够创建恢复结果对象', () => {
+  describe('RecoveryResult type', () => {
+    test('should be able to create recovery result object', () => {
       const data = new ArrayBuffer(100);
       const result: FileRecoveryResult = {
         data,
@@ -248,7 +248,7 @@ describe('TypeScript类型定义', () => {
       expect(result.data).toBeInstanceOf(ArrayBuffer);
     });
 
-    test('应该能够处理不同大小的数据', () => {
+    test('should be able to handle different data sizes', () => {
       const sizes = [0, 1, 100, 1024, 1024 * 1024];
 
       sizes.forEach(size => {
@@ -264,13 +264,13 @@ describe('TypeScript类型定义', () => {
       });
     });
 
-    test('应该能够处理特殊文件名', () => {
+    test('should be able to handle special filenames', () => {
       const specialNames = [
         'file with spaces.txt',
         'file-with-dashes.txt',
         'file.with.dots.txt',
         'file_with_underscores.txt',
-        '中文文件名.txt',
+        'Chinese filename.txt',
         'file-123.txt',
       ];
 
@@ -286,8 +286,8 @@ describe('TypeScript类型定义', () => {
     });
   });
 
-  describe('类型兼容性', () => {
-    test('Share数组应该与recoverSecret函数兼容', () => {
+  describe('Type compatibility', () => {
+    test('Share array should be compatible with recoverSecret function', () => {
       const shares: Share[] = [
         { id: 1, value: 100n },
         { id: 2, value: 200n },
@@ -302,7 +302,7 @@ describe('TypeScript类型定义', () => {
       });
     });
 
-    test('SecretSharingConfig应该与splitSecret函数兼容', () => {
+    test('SecretSharingConfig should be compatible with splitSecret function', () => {
       const config: SecretSharingConfig = {
         threshold: 2,
         totalShares: 3,
@@ -314,7 +314,7 @@ describe('TypeScript类型定义', () => {
       expect(typeof config.totalShares).toBe('number');
     });
 
-    test('FileMetadata应该包含所有必需属性', () => {
+    test('FileMetadata should contain all required properties', () => {
       const metadata = {
         scheme: 'pure-shamir' as const,
         threshold: 2,
@@ -349,8 +349,8 @@ describe('TypeScript类型定义', () => {
     });
   });
 
-  describe('边界情况', () => {
-    test('应该能够处理零值', () => {
+  describe('Edge cases', () => {
+    test('should be able to handle zero values', () => {
       const share: Share = {
         id: 0,
         value: 0n,
@@ -360,7 +360,7 @@ describe('TypeScript类型定义', () => {
       expect(share.value).toBe(0n);
     });
 
-    test('应该能够处理最大值', () => {
+    test('should be able to handle maximum values', () => {
       const share: Share = {
         id: Number.MAX_SAFE_INTEGER,
         value: 2n ** 1000n,
@@ -370,7 +370,7 @@ describe('TypeScript类型定义', () => {
       expect(share.value).toBeGreaterThan(0n);
     });
 
-    test('应该能够处理空数据', () => {
+    test('should be able to handle empty data', () => {
       const result: FileRecoveryResult = {
         data: new ArrayBuffer(0),
         recoveredSHA256: '',

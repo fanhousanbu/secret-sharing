@@ -1,4 +1,4 @@
-// Web版本的类型定义
+// Web version type definitions
 
 export interface Share {
   id: number;
@@ -9,7 +9,7 @@ export interface EncryptionResult {
   encryptedData: ArrayBuffer;
   key: ArrayBuffer;
   iv: ArrayBuffer;
-  salt?: ArrayBuffer; // 当使用密码时需要保存盐值
+  salt?: ArrayBuffer; // Salt value to save when using password
 }
 
 export interface FileSplitResult {
@@ -22,7 +22,7 @@ export interface FileSplitResult {
     iv: ArrayBuffer;
     salt?: ArrayBuffer;
     usePassword: boolean;
-    originalSHA256?: string; // 原始文件的SHA256哈希
+    originalSHA256?: string; // SHA256 hash of original file
   };
 }
 
@@ -36,7 +36,7 @@ export interface RecoveryOptions {
     iv: ArrayBuffer;
     salt?: ArrayBuffer;
     usePassword: boolean;
-    originalSHA256?: string; // 原始文件的SHA256哈希
+    originalSHA256?: string; // SHA256 hash of original file
   };
 }
 
@@ -52,22 +52,22 @@ export interface ShareFile {
     totalShares: number;
     filename: string;
     originalSize: number;
-    iv: string; // base64编码的iv
-    salt?: string; // base64编码的salt（当使用密码时）
-    usePassword: boolean; // 是否使用了用户密码
-    originalSHA256?: string; // 原始文件的SHA256哈希
+    iv: string; // base64 encoded iv
+    salt?: string; // base64 encoded salt (when using password)
+    usePassword: boolean; // whether user password is used
+    originalSHA256?: string; // SHA256 hash of original file
   };
 }
 
-// 加密方案类型
+// Encryption scheme types
 export type EncryptionScheme = 'hybrid' | 'pure-shamir';
 
-// 纯Shamir方案相关类型
+// Pure Shamir scheme related types
 export interface PureShamirShare {
   id: number;
   value: bigint;
-  chunkIndex: number; // 数据块索引
-  totalChunks: number; // 总数据块数
+  chunkIndex: number; // Data chunk index
+  totalChunks: number; // Total number of data chunks
 }
 
 export interface PureShamirSplitResult {
@@ -78,12 +78,12 @@ export interface PureShamirSplitResult {
     totalShares: number;
     filename: string;
     originalSize: number;
-    processedSize: number; // 加密后的数据大小（如果使用密码）
+    processedSize: number; // Size of encrypted data (if using password)
     chunkSize: number;
     totalChunks: number;
     usePassword: boolean;
-    salt?: ArrayBuffer; // 当使用密码时的盐值
-    originalSHA256?: string; // 原始文件的SHA256哈希
+    salt?: ArrayBuffer; // Salt value when using password
+    originalSHA256?: string; // SHA256 hash of original file
   };
 }
 
@@ -95,44 +95,44 @@ export interface PureShamirRecoveryOptions {
     totalShares: number;
     filename: string;
     originalSize: number;
-    processedSize: number; // 加密后的数据大小（如果使用密码）
+    processedSize: number; // Size of encrypted data (if using password)
     chunkSize: number;
     totalChunks: number;
     usePassword: boolean;
-    salt?: ArrayBuffer; // 当使用密码时的盐值
-    originalSHA256?: string; // 原始文件的SHA256哈希
+    salt?: ArrayBuffer; // Salt value when using password
+    originalSHA256?: string; // SHA256 hash of original file
   };
 }
 
 export interface PureShamirShareFile {
   shareId: number;
-  shares: PureShamirShare[]; // 包含所有数据块的份额
+  shares: PureShamirShare[]; // Shares containing all data chunks
   metadata: {
     scheme: 'pure-shamir';
     threshold: number;
     totalShares: number;
     filename: string;
     originalSize: number;
-    processedSize: number; // 加密后的数据大小（如果使用密码）
+    processedSize: number; // Size of encrypted data (if using password)
     chunkSize: number;
     totalChunks: number;
     usePassword: boolean;
-    salt?: string; // base64编码的盐值（当使用密码时）
-    originalSHA256?: string; // 原始文件的SHA256哈希
+    salt?: string; // base64 encoded salt value (when using password)
+    originalSHA256?: string; // SHA256 hash of original file
   };
 }
 
-// 统一的分割结果类型
+// Unified split result types
 export type UnifiedSplitResult =
   | (FileSplitResult & { scheme: 'hybrid' })
   | PureShamirSplitResult;
 
-// 统一的恢复选项类型
+// Unified recovery option types
 export type UnifiedRecoveryOptions =
   | (RecoveryOptions & { scheme: 'hybrid' })
   | PureShamirRecoveryOptions;
 
-// 文件恢复结果
+// File recovery result
 export interface FileRecoveryResult {
   data: ArrayBuffer;
   recoveredSHA256: string;

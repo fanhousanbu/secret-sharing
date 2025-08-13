@@ -37,7 +37,7 @@ describe('LanguageSwitcher Component', () => {
 
   test('should render Chinese button', () => {
     render(<LanguageSwitcher />);
-    const zhButton = screen.getByText('中文');
+    const zhButton = screen.getByText('Chinese');
     expect(zhButton).toBeInTheDocument();
   });
 
@@ -50,7 +50,7 @@ describe('LanguageSwitcher Component', () => {
 
   test('should have Chinese button not selected by default', () => {
     render(<LanguageSwitcher />);
-    const zhButton = screen.getByText('中文');
+    const zhButton = screen.getByText('Chinese');
     expect(zhButton).toHaveClass('bg-gray-200');
     expect(zhButton).toHaveClass('text-gray-700');
   });
@@ -64,7 +64,7 @@ describe('LanguageSwitcher Component', () => {
 
   test('should handle Chinese button click', () => {
     render(<LanguageSwitcher />);
-    const zhButton = screen.getByText('中文');
+    const zhButton = screen.getByText('Chinese');
     fireEvent.click(zhButton);
     expect(mockSetLanguage).toHaveBeenCalledWith('zh');
   });
@@ -125,7 +125,7 @@ describe('LanguageSwitcher Component', () => {
 
   test('should have hover effects on inactive buttons', () => {
     render(<LanguageSwitcher />);
-    const zhButton = screen.getByText('中文');
+    const zhButton = screen.getByText('Chinese');
     expect(zhButton).toHaveClass('hover:bg-gray-300');
   });
 
@@ -149,7 +149,7 @@ describe('LanguageSwitcher Component', () => {
   test('should call setLanguage with correct language codes', () => {
     render(<LanguageSwitcher />);
     const enButton = screen.getByText('EN');
-    const zhButton = screen.getByText('中文');
+    const zhButton = screen.getByText('Chinese');
 
     fireEvent.click(enButton);
     expect(mockSetLanguage).toHaveBeenCalledWith('en');
@@ -161,7 +161,7 @@ describe('LanguageSwitcher Component', () => {
   test('should have proper button text content', () => {
     render(<LanguageSwitcher />);
     expect(screen.getByText('EN')).toBeInTheDocument();
-    expect(screen.getByText('中文')).toBeInTheDocument();
+    expect(screen.getByText('Chinese')).toBeInTheDocument();
   });
 
   test('should have proper button roles', () => {
@@ -174,7 +174,7 @@ describe('LanguageSwitcher Component', () => {
     render(<LanguageSwitcher />);
     const buttons = screen.getAllByRole('button');
     buttons.forEach(button => {
-      // 按钮默认类型是 button，不需要显式设置
+      // Button default type is button, no need to set explicitly
       expect(button).toBeInTheDocument();
     });
   });
